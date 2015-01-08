@@ -30,7 +30,7 @@ function render(width) {
     //make a map                        
     var map = new L.Map("map", {
         center: [37.74, -122.31], //lat, long, not long, lat
-        zoom: 11,
+        zoom: 10,
         scrollWheelZoom: false}) 
         //stamen tiles
         .addLayer(new L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
@@ -83,7 +83,7 @@ function render(width) {
         var feature = g.selectAll("circle")
             .data(local.features)
             .enter().append("circle")
-            .attr("r", 20)
+            .attr("r", 12)
             .style("fill", function(d){return color(d.properties.current_construction_phase_complete)})
             .style("stroke", "black")
             .style("stroke-width", 0.5)
