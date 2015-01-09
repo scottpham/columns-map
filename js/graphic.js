@@ -117,7 +117,7 @@ function render(width) {
             .attr("r", 8)
             .style("fill", function(d){return d.properties.color; })
             .style("stroke", "black")
-            .style("stroke-width", 0.5)
+            .style("stroke-width", 0.3)
             .on("mouseover", function(d,i){ 
                 tip.show(d);
                 d3.select(this).each(highlight);})
@@ -151,10 +151,10 @@ function render(width) {
         .data(caltrans.features)
         .enter().append("circle")
         .attr("r", 8)
-        .style("fill", "gray")
+        .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
         .style("opacity", "0.8")
         .style("stroke", "black")
-        .style("stroke-width", 0.5)
+        .style("stroke-width", 0.3)
         .on("click", clickForFeatures)
         .on("mouseover", function(d,i){
             d3.select(this).each(highlight);
