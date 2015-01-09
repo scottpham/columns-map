@@ -44,13 +44,18 @@ function render(width) {
     var svg = d3.select("#map").select("svg"),
         g = svg.append("g");
 
-
-         //tooltip declaration
+        ////////////////tooltip stuff////////////////
+        //create tip container in d3 for local
         var div = d3.select("#map").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0); //hide till called
+
+        //tip container for caltrans
+        var divCaltrans = d3.select("#map").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-        //format for tooltip
+        //format for tooltip percentages
         var percentFormat = function(d){
             if (d) { return (d3.format(".1%"))(d) }
             else { return "0%"}
@@ -67,7 +72,17 @@ function render(width) {
 
         });
 
+        var tipCaltrans = d3.tip()
+            .attr("class", 'd3-tip')
+            .offset([-10, 0])
+            .html(function(d) { return "CalTrans-controlled pier.</br>" + (d.properties.name ? d.properties.name : "" ) + d.properties.line + " line train."});
+
         g.call(tip);
+        g.call(tipCaltrans);
+
+        //////////////end tooltip//////////////
+
+
 
         //add a latlng object to each item in the dataset
         //var local is from local.js
@@ -75,24 +90,83 @@ function render(width) {
             d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
         });
 
+        //add latlng object to each item in caltrans dataset
+        caltrans.features.forEach(function(d){
+            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+
+        });
+
         //threshold scale for key and circles
         var color = d3.scale.quantize() //colorscale
-        .range(colorbrewer.Reds[5]);
+        .range(colorbrewer.Greens[5]);
 
-        //circles
+        //color constants
+        var colorCompleted = colors.red1,
+            colorNotCompleted = "darkgreen";
+
+        //get color sorted out for local.js
+        local.features.forEach(function(d){
+            +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
+        });
+
+        //circles for local.js
         var feature = g.selectAll("circle")
+            .attr("class", ".local")
             .data(local.features)
             .enter().append("circle")
-            .attr("r", 12)
-            .style("fill", function(d){return color(d.properties.current_construction_phase_complete)})
+            .attr("r", 8)
+            .style("fill", function(d){return d.properties.color; })
             .style("stroke", "black")
             .style("stroke-width", 0.5)
-            .on("mouseover", tip.show)
-            .on("mouseout", tip.hide)
+            .on("mouseover", function(d,i){ 
+                tip.show(d);
+                d3.select(this).each(highlight);})
+            .on("mouseout", function(d,i){ 
+                tip.hide(d);
+                d3.select(this).each(unhighlight);})
             .on("click", clickForFeatures);
 
+    //bind highlight on both datasets
+    d3.selectAll(".local", "")
 
-        function clickForFeatures(d){ console.log(d);}
+
+    // highlight function for mouseover
+    var highlight = function(){
+        //redraw the selection
+        this.parentNode.appendChild(this);
+        //generate an actual d3 selection and do stuff
+        d3.select(this).attr("r", 15).style("opacity", 1).style("stroke-width", 1.5);
+    };
+
+    var unhighlight = function(){
+        var firstChild = this.parentNode.firstChild;
+        if(firstChild) {
+            this.parentNode.insertBefore(this, firstChild);
+        }
+        d3.select(this).attr("r", 8).style("opacity", 0.8).style("stroke-width", .5);
+    }
+
+    //circles for caltrans.js
+    var caltransFeature = g.selectAll(".caltrans")
+        .data(caltrans.features)
+        .enter().append("circle")
+        .attr("r", 8)
+        .style("fill", "gray")
+        .style("opacity", "0.8")
+        .style("stroke", "black")
+        .style("stroke-width", 0.5)
+        .on("click", clickForFeatures)
+        .on("mouseover", function(d,i){
+            d3.select(this).each(highlight);
+            tipCaltrans.show(d); 
+        })
+        .on("mouseout", function(d,i){
+            d3.select(this).each(unhighlight);
+            tipCaltrans.hide(d);
+        });
+
+        //helper function sends properties to the console
+        function clickForFeatures(d){ console.log(d.properties);}
        
         //transform cirlces on update
         map.on("viewreset", update);
@@ -109,74 +183,109 @@ function render(width) {
 
         //define update:
         function update() {
+            //transform local points to go
             feature.attr("transform",
                 function(d){
                     return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
                 }
-            )
+            );
+            //transform caltrans points
+            caltransFeature.attr("transform", function(d) {
+                return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
+            });
+
         }
 
 
 
+/////////////key//////////////
 
-    //define scales
-    var y = d3.scale.linear()
-        .domain([0, 1]) //input data
-        .range([0, width/3]); //height of the key
+    // //define scales
+    // var y = d3.scale.linear()
+    //     .domain([0, 1]) //input data
+    //     .range([0, width/3]); //height of the key
 
-    //define a second svg for the key and attach it to the map div
-    var legend = d3.select("#map").append("svg")
-        .attr("width", "125")
-        .attr("height", "500");
+    // //define a second svg for the key and attach it to the map div
+    // var legend = d3.select("#map").append("svg")
+    //     .attr("width", "125")
+    //     .attr("height", "500");
 
-    //create group for color bar and attach to second svg
-    var colorBar = legend.append("g")
-        .attr("class", "key")
-        .attr("transform", "translate(15, 120)")
-        .selectAll("rect")
-        .data(color.range().map(function(col) {
-            var d = color.invertExtent(col);
-            if (d[0] == null) d[0] = y.domain()[0];
-            if (d[1] == null) d[1] = y.domain()[1];
-            return d;
-        }));
+    //make an svg, put a group in it, make a sub group for each circle (2), translate it
+    var legend2 = d3.select("#map").append("svg")
+        .attr("width", 200)
+        .attr("height", 300)
+        .append("g")
+            .attr("class", "circleKey")
+        .selectAll("g")
+            .data([{"color": colors.red1, "text": "0-10% Complete"}, {"color": "darkgreen", "text":"80-100% Complete"}])
+            .enter().append("g")
+            .attr("transform", "translate(30, 120)");
 
-    //create color rects
-    colorBar.enter()
-        .append("rect")
-            .attr("width", 15)
-            .attr("y", function(d) { 
-                return y(d[0]); })
-            .attr("height", function(d) { return y(d[1]) - y(d[0]); })
-            .attr("fill", function(d) { return color(d[0]); });
+    //some key values that i'll repeat
+    var keyRadius = 15;
+    //make the circles
+    legend2.append("circle")
+        .style("stroke-width", 2.0)
+        .style("fill", function(d){ return d.color; })
+        .style("stroke", "black")
+        .attr("r", keyRadius)
+        .attr("cy", function(d,i){ return i * keyRadius*3;});
 
-    //get array of legend domain
-    var colorDomain = color.domain();
+    //add annotations
+    legend2.append("text")
+        .style("font-size", 15)
+        .attr("x", keyRadius*1.5)
+        .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
+        .text(function(d){return d.text;});
 
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("right")
-        .tickSize(16)
-        .ticks(5) //defaults to 10
-        .tickFormat(percentFormat);
+    // //create group for color bar and attach to second svg
+    // var colorBar = legend.append("g")
+    //     .attr("class", "key")
+    //     .attr("transform", "translate(15, 120)")
+    //     .selectAll("rect")
+    //     .data(color.range().map(function(col) {
+    //         var d = color.invertExtent(col);
+    //         if (d[0] == null) d[0] = y.domain()[0];
+    //         if (d[1] == null) d[1] = y.domain()[1];
+    //         return d;
+    //     }));
 
-    d3.select(".key")
-        .call(yAxis);
+    // //create color rects
+    // colorBar.enter()
+    //     .append("rect")
+    //         .attr("width", 15)
+    //         .attr("y", function(d) { 
+    //             return y(d[0]); })
+    //         .attr("height", function(d) { return y(d[1]) - y(d[0]); })
+    //         .attr("fill", function(d) { return color(d[0]); });
 
-    //add label
-    d3.select(".key")
-        .call(yAxis)
-        .append("text")
-        .attr("y", -30)
-        .text("Percent of")
-        .style("font-size", "14");
+    // //get array of legend domain
+    // var colorDomain = color.domain();
 
-    d3.select(".key")
-        .append("text")
-        .attr("y", -10)
-        .text("Bridge Complete")
-        .style("font-size", "14")
-        ;
+    // var yAxis = d3.svg.axis()
+    //     .scale(y)
+    //     .orient("right")
+    //     .tickSize(16)
+    //     .ticks(5) //defaults to 10
+    //     .tickFormat(percentFormat);
+
+    // d3.select(".key")
+    //     .call(yAxis);
+
+    // //add label
+    // d3.select(".key")
+    //     .call(yAxis)
+    //     .append("text")
+    //     .attr("y", -30)
+    //     .text("Percent of")
+    //     .style("font-size", "14");
+
+    // d3.select(".key")
+    //     .append("text")
+    //     .attr("y", -10)
+    //     .text("Bridge Complete")
+    //     .style("font-size", "14")
+    //     ;
 
 } //end render
 
