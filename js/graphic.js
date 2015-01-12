@@ -44,87 +44,87 @@ function render(width) {
     var svg = d3.select("#map").select("svg"),
         g = svg.append("g");
 
-        ////////////////tooltip stuff////////////////
-        //create tip container in d3 for local
-        var div = d3.select("#map").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0); //hide till called
+    ////////////////tooltip stuff////////////////
+    //create tip container in d3 for local
+    var div = d3.select("#map").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0); //hide till called
 
-        //tip container for caltrans
-        var divCaltrans = d3.select("#map").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+    //tip container for caltrans
+    var divCaltrans = d3.select("#map").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
-        //format for tooltip percentages
-        var percentFormat = function(d){
-            if (d) { return (d3.format(".1%"))(d) }
-            else { return "0%"}
-            }
+    //format for tooltip percentages
+    var percentFormat = function(d){
+        if (d) { return (d3.format(".1%"))(d) }
+        else { return "0%"}
+        }
 
-        //format for # of vaccines
-        var commaFormat = d3.format(",f")
+    //format for # of vaccines
+    var commaFormat = d3.format(",f")
 
-        //define tip
-        var tip = d3.tip()
-            .attr("class", 'd3-tip')
-            .offset([-10, 0])
-            .html(function(d) { return d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
+    //define tip
+    var tip = d3.tip()
+        .attr("class", 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) { return d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
 
-        });
+    });
 
-        var tipCaltrans = d3.tip()
-            .attr("class", 'd3-tip')
-            .offset([-10, 0])
-            .html(function(d) { return "CalTrans-controlled pier.</br>" + (d.properties.name ? d.properties.name : "" ) + d.properties.line + " line train."});
+    var tipCaltrans = d3.tip()
+        .attr("class", 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d) { return "CalTrans-controlled pier.</br>" + (d.properties.name ? d.properties.name : "" ) + d.properties.line + " line train."});
 
-        g.call(tip);
-        g.call(tipCaltrans);
+    //call both tips
+    g.call(tip);
+    g.call(tipCaltrans);
 
         //////////////end tooltip//////////////
 
+    //add a latlng object to each item in the dataset
+    //var local is from local.js
+    local.features.forEach(function(d) {
+        d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+    });
 
+    //add latlng object to each item in caltrans dataset
+    caltrans.features.forEach(function(d){
+        d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
 
-        //add a latlng object to each item in the dataset
-        //var local is from local.js
-        local.features.forEach(function(d) {
-            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
-        });
+    });
 
-        //add latlng object to each item in caltrans dataset
-        caltrans.features.forEach(function(d){
-            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+    //threshold scale for key and circles
+    var color = d3.scale.quantize() //colorscale
+    .range(colorbrewer.Greens[5]);
 
-        });
+    //color constants
+    var colorCompleted = colors.red1,
+        colorNotCompleted = "darkgreen";
 
-        //threshold scale for key and circles
-        var color = d3.scale.quantize() //colorscale
-        .range(colorbrewer.Greens[5]);
+    //get color sorted out for local.js
+    local.features.forEach(function(d){
+        +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
+    });
 
-        //color constants
-        var colorCompleted = colors.red1,
-            colorNotCompleted = "darkgreen";
-
-        //get color sorted out for local.js
-        local.features.forEach(function(d){
-            +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
-        });
-
-        //circles for local.js
-        var feature = g.selectAll("circle")
-            .attr("class", ".local")
-            .data(local.features)
-            .enter().append("circle")
-            .attr("r", 8)
-            .style("fill", function(d){return d.properties.color; })
-            .style("stroke", "black")
-            .style("stroke-width", 0.3)
-            .on("mouseover", function(d,i){ 
-                tip.show(d);
-                d3.select(this).each(highlight);})
-            .on("mouseout", function(d,i){ 
-                tip.hide(d);
-                d3.select(this).each(unhighlight);})
-            .on("click", clickForFeatures);
+    //circles for local.js
+    var feature = g.selectAll("circle")
+        .data(local.features)
+        .enter().append("circle")
+        .attr("r", 8)
+        .attr("class", "local")
+        .style("fill", function(d){return d.properties.color; })
+        .style("opacity", 0.8)
+        .style("stroke", "black")
+        .style("stroke-width", 0.3)
+        .on("mouseover", function(d,i){ 
+            tip.show(d);
+            d3.select(this).each(highlight);})
+        .on("mouseout", function(d,i){ 
+            tip.hide(d);
+            d3.select(this).each(unhighlight);})
+        .on("click", clickForFeatures);
 
     //bind highlight on both datasets
     d3.selectAll(".local", "")
@@ -150,6 +150,7 @@ function render(width) {
     var caltransFeature = g.selectAll(".caltrans")
         .data(caltrans.features)
         .enter().append("circle")
+        .attr("class", "caltrans")
         .attr("r", 8)
         .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
         .style("opacity", "0.8")
@@ -165,66 +166,76 @@ function render(width) {
             tipCaltrans.hide(d);
         });
 
-        //helper function sends properties to the console
-        function clickForFeatures(d){ console.log(d.properties);}
-       
-        //transform cirlces on update
-        map.on("viewreset", update);
+    //helper function sends properties to the console
+    function clickForFeatures(d){ console.log(d.properties);}
+   
+    //transform cirlces on update
+    map.on("viewreset", update);
 
-        //call update manually
-        update();
+    //call update manually
+    update();
 
-        //my helper function
-        //map.on("click", showLocation);
+    //my helper function
+    map.on("click", showLocation);
 
-        function showLocation(e){
-            console.log(e.latlng);
-        }
+    function showLocation(e){
+        console.log(e.latlng);
+    }
 
-        //define update:
-        function update() {
-            //transform local points to go
-            feature.attr("transform",
-                function(d){
-                    return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
-                }
-            );
-            //transform caltrans points
-            caltransFeature.attr("transform", function(d) {
+    //define update:
+    function update() {
+        //transform local points to go
+        feature.attr("transform",
+            function(d){
                 return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
-            });
+            }
+        );
+        //transform caltrans points
+        caltransFeature.attr("transform", function(d) {
+            return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
+        });
+    }
 
-        }
+//////////////////filters//////////////////
+    d3.select("#local").on("click", function(){
 
+        var myDelay = function(d,i){return i;}
+        var myDuration = 5;
+        g.selectAll(".caltrans").transition().delay(myDelay).duration(myDuration).remove();
+        console.log("#local fired");
+
+
+    });
 
 
 /////////////key//////////////
 
-    // //define scales
-    // var y = d3.scale.linear()
-    //     .domain([0, 1]) //input data
-    //     .range([0, width/3]); //height of the key
+    var legend = d3.select("#map").append("svg")
+        .attr("width", 250)
+        .attr("height", 115);
 
-    // //define a second svg for the key and attach it to the map div
-    // var legend = d3.select("#map").append("svg")
-    //     .attr("width", "125")
-    //     .attr("height", "500");
+    legend.append("rect")
+        .style("fill", "white")
+        .attr("width", 190)
+        .attr("height", 100)
+        .attr("x", "50")
+        .attr("y", "2")
+        .style("stroke", "black")
+        .style("stroke-width", 2);
 
-    //make an svg, put a group in it, make a sub group for each circle (2), translate it
-    var legend2 = d3.select("#map").append("svg")
-        .attr("width", 200)
-        .attr("height", 300)
-        .append("g")
+    legend.append("g")
             .attr("class", "circleKey")
         .selectAll("g")
-            .data([{"color": colors.red1, "text": "0-10% Complete"}, {"color": "darkgreen", "text":"80-100% Complete"}])
+            .data([{"color": colors.red1, "text": "Incomplete (0-10%)"}, {"color": "darkgreen", "text":"Complete (80-100%)"}])
             .enter().append("g")
-            .attr("transform", "translate(30, 120)");
+            .attr("class", "colorsGroup")
+            .attr("transform", "translate(75, 30)");
+
 
     //some key values that i'll repeat
     var keyRadius = 15;
     //make the circles
-    legend2.append("circle")
+    legend.selectAll(".colorsGroup").append("circle")
         .style("stroke-width", 2.0)
         .style("fill", function(d){ return d.color; })
         .style("stroke", "black")
@@ -232,7 +243,7 @@ function render(width) {
         .attr("cy", function(d,i){ return i * keyRadius*3;});
 
     //add annotations
-    legend2.append("text")
+    legend.selectAll(".colorsGroup").append("text")
         .style("font-size", 15)
         .attr("x", keyRadius*1.5)
         .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
