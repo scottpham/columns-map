@@ -249,55 +249,6 @@ function render(width) {
         .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
         .text(function(d){return d.text;});
 
-    // //create group for color bar and attach to second svg
-    // var colorBar = legend.append("g")
-    //     .attr("class", "key")
-    //     .attr("transform", "translate(15, 120)")
-    //     .selectAll("rect")
-    //     .data(color.range().map(function(col) {
-    //         var d = color.invertExtent(col);
-    //         if (d[0] == null) d[0] = y.domain()[0];
-    //         if (d[1] == null) d[1] = y.domain()[1];
-    //         return d;
-    //     }));
-
-    // //create color rects
-    // colorBar.enter()
-    //     .append("rect")
-    //         .attr("width", 15)
-    //         .attr("y", function(d) { 
-    //             return y(d[0]); })
-    //         .attr("height", function(d) { return y(d[1]) - y(d[0]); })
-    //         .attr("fill", function(d) { return color(d[0]); });
-
-    // //get array of legend domain
-    // var colorDomain = color.domain();
-
-    // var yAxis = d3.svg.axis()
-    //     .scale(y)
-    //     .orient("right")
-    //     .tickSize(16)
-    //     .ticks(5) //defaults to 10
-    //     .tickFormat(percentFormat);
-
-    // d3.select(".key")
-    //     .call(yAxis);
-
-    // //add label
-    // d3.select(".key")
-    //     .call(yAxis)
-    //     .append("text")
-    //     .attr("y", -30)
-    //     .text("Percent of")
-    //     .style("font-size", "14");
-
-    // d3.select(".key")
-    //     .append("text")
-    //     .attr("y", -10)
-    //     .text("Bridge Complete")
-    //     .style("font-size", "14")
-    //     ;
-
 } //end render
 
 /*

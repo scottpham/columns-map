@@ -196,11 +196,18 @@
 <body>
     <h1>CalTrans Piers</h1>
     <p>Many of the piers that hold up aerial structures (bridges, on-ramps, overpasses, etc.) have to be retrofitted for earthquake safety, especially along the BART lines. A lot of that work has been finished already, but much of it won't be done till 2019.</p>
+    
+    <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-primary active">
+            <input type="checkbox" autocomplete="off" id="state" checked>State Controlled Piers</button>
+        </label>
+        <label class="btn btn-primary">
+            <input type="checkbox" autocomplete="off" id="local">Locally Controlled Piers</button>
+        </label>
+    </div>
 
-    <button id="state" class="btn btn-default">State Controlled Piers</button>
-    <button id="local" class="btn btn-default">Locally Controlled Piers</button>
+
     <div id="map"></div>
-
 
     <div class="footnotes">
         <h4>Notes: </h4>
