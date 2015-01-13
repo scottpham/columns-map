@@ -223,67 +223,68 @@ function render(width) {
         });
     }
 
-    //////////////////filters//////////////////
-d3.select("#local").on("click", function(){
+        //////////////////filters//////////////////
+    d3.select("#local").on("click", function(){
 
-    console.log($("#local").is(':checked'));
+        console.log($("#local").is(':checked'));
 
-    //check local
-    if($("#local").is(':checked')) {
-        //add latlng object to each item in caltrans dataset
-        caltrans.features.forEach(function(d){
-            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+        //check local
+        if($("#local").is(':checked')) {
+            //add latlng object to each item in caltrans dataset
+            caltrans.features.forEach(function(d){
+                d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+            });
+
+            //data() enter() and append
+            caltransFeature();
+
+            //clone of update + 
+            transUpdate();
+
+        }
+        else{
+            //remove caltrans
+            d3.selectAll(".caltrans")
+                .transition()
+                .delay(myDelay)
+                .duration(myDuration)
+                .remove(); 
+            }
         });
 
-        //data() enter() and append
-        caltransFeature();
+    d3.select("#caltrans").on("click", function(){
 
-        //clone of update + 
-        transUpdate();
+        console.log($("#caltrans").is(':checked'));
 
-    }
-    else{
-        //remove caltrans
-        d3.selectAll(".caltrans")
-            .transition()
-            .delay(myDelay)
-            .duration(myDuration)
-            .remove(); 
+        if($("#caltrans").is(':checked')){
+            //add a latlng object to each item in the dataset
+            local.features.forEach(function(d) {
+                d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+            });
+
+            //get color sorted out for local.js
+            local.features.forEach(function(d){
+                +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
+            });
+
+            //data() enter() and append
+            localFeature();
+
+            //call fancy update to correctly map geo points
+            transUpdate();
+        }
+
+        else{
+            //remove caltrans
+            d3.selectAll(".local")
+                .transition()
+                .delay(myDelay)
+                .duration(myDuration)
+                .remove(); 
         }
     });
 
-d3.select("#caltrans").on("click", function(){
 
-    console.log($("#caltrans").is(':checked'));
-
-    if($("#caltrans").is(':checked')){
-        //add a latlng object to each item in the dataset
-        local.features.forEach(function(d) {
-            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
-        });
-
-        //get color sorted out for local.js
-        local.features.forEach(function(d){
-            +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
-        });
-
-        //data() enter() and append
-        localFeature();
-
-
-        //call fancy update to correctly map geo points
-        transUpdate();
-    }
-
-    else{
-        //remove caltrans
-        d3.selectAll(".local")
-            .transition()
-            .delay(myDelay)
-            .duration(myDuration)
-            .remove(); 
-    }
-});
 
 d3.select("#extra").on("click", function(){console.log($("#caltrans").is(':checked'));})
 
@@ -302,8 +303,6 @@ d3.select("#extra").on("click", function(){console.log($("#caltrans").is(':check
         .attr("x", "50")
         .attr("y", "2")
         .style("opacity", 0.8)
-        // .style("stroke", "black")
-        // .style("stroke-width", 2)
         ;
 
     legend.append("g")
@@ -313,7 +312,6 @@ d3.select("#extra").on("click", function(){console.log($("#caltrans").is(':check
             .enter().append("g")
             .attr("class", "colorsGroup")
             .attr("transform", "translate(75, 30)");
-
 
     //some key values that i'll repeat
     var keyRadius = 15;
