@@ -197,15 +197,19 @@ function render(width) {
     }
 
 //////////////////filters//////////////////
-    d3.select("#local").on("click", function(){
-
-        var myDelay = function(d,i){return i;}
-        var myDuration = 5;
-        g.selectAll(".caltrans").transition().delay(myDelay).duration(myDuration).remove();
-        console.log("#local fired");
 
 
-    });
+
+
+    // d3.select("#local").on("click", function(){
+
+    //     var myDelay = function(d,i){return i;}
+    //     var myDuration = 5;
+    //     g.selectAll(".caltrans").transition().delay(myDelay).duration(myDuration).remove();
+    //     console.log("#local fired");
+
+
+    // });
 
 
 /////////////key//////////////
@@ -220,8 +224,10 @@ function render(width) {
         .attr("height", 100)
         .attr("x", "50")
         .attr("y", "2")
-        .style("stroke", "black")
-        .style("stroke-width", 2);
+        .style("opacity", 0.8)
+        // .style("stroke", "black")
+        // .style("stroke-width", 2)
+        ;
 
     legend.append("g")
             .attr("class", "circleKey")
