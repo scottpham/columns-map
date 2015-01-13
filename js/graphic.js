@@ -98,8 +98,8 @@ function render(width) {
     });
 
     //color constants
-    var colorCompleted = colors.red1,
-        colorNotCompleted = "darkgreen";
+    var colorCompleted = colors.blue1,
+        colorNotCompleted = colors.orange2;
 
     //get color sorted out for local.js
     local.features.forEach(function(d){
@@ -309,7 +309,7 @@ d3.select("#extra").on("click", function(){ console.log($("#caltrans").is(':chec
     legend.append("g")
             .attr("class", "circleKey")
         .selectAll("g")
-            .data([{"color": colors.red1, "text": "Incomplete (0-10%)"}, {"color": "darkgreen", "text":"Complete (80-100%)"}])
+            .data([{"color": colorNotCompleted, "text": "Incomplete (0-10%)"}, {"color": colorCompleted, "text":"Complete (80-100%)"}])
             .enter().append("g")
             .attr("class", "colorsGroup")
             .attr("transform", "translate(75, 30)");
