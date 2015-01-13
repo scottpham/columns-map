@@ -68,14 +68,17 @@ function render(width) {
     var tip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
+        .html(function(d) { return "Locally owned bridge</br>" + d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
 
     });
 
     var tipCaltrans = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return "CalTrans-controlled pier.</br>" + (d.properties.name ? d.properties.name : "" ) + d.properties.line + " line train."});
+        .html(function(d) { return "CalTrans-owned Pier" + "</br>City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
+            (d.properties.line == "A" ? "Fremont Bound Trains" : (d.properties.line == "R" ? "Richmond Bound Trains" : (d.properties.line == "M" ? "Milbrae Bound Trains" : (d.properties.line == "C" ? "Pitsburg/Bay Point Bound Trains" : "")))) 
+
+        });
 
     //call both tips
     g.call(tip);
@@ -256,7 +259,7 @@ function render(width) {
 
         console.log($("#caltrans").is(':checked'));
 
-        if($("#caltrans").is(':checked')){
+        if( $("#caltrans").is(':checked')){
             //add a latlng object to each item in the dataset
             local.features.forEach(function(d) {
                 d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
@@ -284,9 +287,7 @@ function render(width) {
         }
     });
 
-
-
-d3.select("#extra").on("click", function(){console.log($("#caltrans").is(':checked'));})
+d3.select("#extra").on("click", function(){ console.log($("#caltrans").is(':checked'));})
 
 
 
