@@ -92,12 +92,7 @@ function render(width) {
     //add latlng object to each item in caltrans dataset
     caltrans.features.forEach(function(d){
         d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
-
     });
-
-    //threshold scale for key and circles
-    var color = d3.scale.quantize() //colorscale
-    .range(colorbrewer.Greens[5]);
 
     //color constants
     var colorCompleted = colors.red1,
@@ -109,25 +104,26 @@ function render(width) {
     });
 
     //circles for local.js
-    var feature = g.selectAll("circle")
-        .data(local.features)
-        .enter().append("circle")
-        .attr("r", 8)
-        .attr("class", "local")
-        .style("fill", function(d){return d.properties.color; })
-        .style("opacity", 0.8)
-        .style("stroke", "black")
-        .style("stroke-width", 0.3)
-        .on("mouseover", function(d,i){ 
-            tip.show(d);
-            d3.select(this).each(highlight);})
-        .on("mouseout", function(d,i){ 
-            tip.hide(d);
-            d3.select(this).each(unhighlight);})
-        .on("click", clickForFeatures);
+    function localFeature(){
+        var feature = g.selectAll(".local")
+            .data(local.features)
+            .enter().append("circle")
+            .attr("r", 8)
+            .attr("class", "local")
+            .style("fill", function(d){return d.properties.color; })
+            .style("opacity", 0.8)
+            .style("stroke", "black")
+            .style("stroke-width", 0.3)
+            .on("mouseover", function(d,i){ 
+                tip.show(d);
+                d3.select(this).each(highlight);})
+            .on("mouseout", function(d,i){ 
+                tip.hide(d);
+                d3.select(this).each(unhighlight);})
+            .on("click", clickForFeatures);
+        };
 
-    //bind highlight on both datasets
-    d3.selectAll(".local", "")
+    localFeature();
 
 
     // highlight function for mouseover
@@ -147,24 +143,27 @@ function render(width) {
     }
 
     //circles for caltrans.js
-    var caltransFeature = g.selectAll(".caltrans")
-        .data(caltrans.features)
-        .enter().append("circle")
-        .attr("class", "caltrans")
-        .attr("r", 8)
-        .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
-        .style("opacity", "0.8")
-        .style("stroke", "black")
-        .style("stroke-width", 0.3)
-        .on("click", clickForFeatures)
-        .on("mouseover", function(d,i){
-            d3.select(this).each(highlight);
-            tipCaltrans.show(d); 
-        })
-        .on("mouseout", function(d,i){
-            d3.select(this).each(unhighlight);
-            tipCaltrans.hide(d);
-        });
+    function caltransFeature(){
+        var caltransFeature = g.selectAll(".caltrans")
+            .data(caltrans.features)
+            .enter().append("circle")
+            .attr("class", "caltrans")
+            .attr("r", 8)
+            .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
+            .style("opacity", "0.8")
+            .style("stroke", "black")
+            .style("stroke-width", 0.3)
+            .on("click", clickForFeatures)
+            .on("mouseover", function(d,i){
+                d3.select(this).each(highlight);
+                tipCaltrans.show(d); 
+            })
+            .on("mouseout", function(d,i){
+                d3.select(this).each(unhighlight);
+                tipCaltrans.hide(d);
+            });}
+
+    caltransFeature();
 
     //helper function sends properties to the console
     function clickForFeatures(d){ console.log(d.properties);}
@@ -182,34 +181,112 @@ function render(width) {
         console.log(e.latlng);
     }
 
+
     //define update:
     function update() {
         //transform local points to go
-        feature.attr("transform",
+        g.selectAll(".local").attr("transform",
             function(d){
                 return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
             }
         );
         //transform caltrans points
-        caltransFeature.attr("transform", function(d) {
+        g.selectAll(".caltrans")
+            .attr("transform", function(d) {
+            return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
+        });
+
+    }
+
+    ////delay constants
+    var myDelay = function(d,i){return i * 0.8;};
+    var myDuration = 5;
+
+    function transUpdate() {
+        //transform local points to go
+        g.selectAll(".local")
+            .transition()
+            .delay(myDelay)
+            .duration(myDuration)
+        .attr("transform",
+            function(d){
+                return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
+            }
+        );
+        //transform caltrans points
+        g.selectAll(".caltrans")
+            .transition()
+            .delay(myDelay)
+            .duration(myDuration)
+            .attr("transform", function(d) {
             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
         });
     }
 
-//////////////////filters//////////////////
+    //////////////////filters//////////////////
+d3.select("#local").on("click", function(){
+
+    console.log($("#local").is(':checked'));
+
+    //check local
+    if($("#local").is(':checked')) {
+        //add latlng object to each item in caltrans dataset
+        caltrans.features.forEach(function(d){
+            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+        });
+
+        //data() enter() and append
+        caltransFeature();
+
+        //clone of update + 
+        transUpdate();
+
+    }
+    else{
+        //remove caltrans
+        d3.selectAll(".caltrans")
+            .transition()
+            .delay(myDelay)
+            .duration(myDuration)
+            .remove(); 
+        }
+    });
+
+d3.select("#caltrans").on("click", function(){
+
+    console.log($("#caltrans").is(':checked'));
+
+    if($("#caltrans").is(':checked')){
+        //add a latlng object to each item in the dataset
+        local.features.forEach(function(d) {
+            d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
+        });
+
+        //get color sorted out for local.js
+        local.features.forEach(function(d){
+            +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
+        });
+
+        //data() enter() and append
+        localFeature();
 
 
+        //call fancy update to correctly map geo points
+        transUpdate();
+    }
 
+    else{
+        //remove caltrans
+        d3.selectAll(".local")
+            .transition()
+            .delay(myDelay)
+            .duration(myDuration)
+            .remove(); 
+    }
+});
 
-    // d3.select("#local").on("click", function(){
+d3.select("#extra").on("click", function(){console.log($("#caltrans").is(':checked'));})
 
-    //     var myDelay = function(d,i){return i;}
-    //     var myDuration = 5;
-    //     g.selectAll(".caltrans").transition().delay(myDelay).duration(myDuration).remove();
-    //     console.log("#local fired");
-
-
-    // });
 
 
 /////////////key//////////////

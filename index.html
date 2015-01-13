@@ -199,14 +199,17 @@
         <p>Many of the piers that hold up aerial structures (bridges, on-ramps, overpasses, etc.) have to be retrofitted for earthquake safety, especially along the BART lines. A lot of that work has been finished already, but much of it won't be done till 2019.</p>
     </div>
 
-    <div class="col-lg-6"> 
-        <label class="btn btn-primary">
-            <input type="checkbox" autocomplete="off" checked> Locally Controlled Bridges
-        </label>
-        <label class="btn btn-primary">
-            <input type="checkbox" autocomplete="off" checked> CalTrans Controlled Bridges
-        </label>
-
+    <div class="col-lg-6">
+        <div data-toggle=""> 
+            <label class="btn btn-primary">
+                <input type="checkbox" id="local" autocomplete="off" checked> Locally Controlled Bridges
+            </label>
+            <label class="btn btn-primary">
+                <input type="checkbox" id="caltrans" autocomplete="off" checked> CalTrans Controlled Bridges
+            </label>
+            <label id="extra" class="btn btn-primary">
+                <input type="button">Extra</label>
+        </div>
     </div>
 
 
@@ -224,7 +227,6 @@
 
     <!-- load data before graphic-->
     <script src="js/local.js"></script>
-
     <!-- scecond data set -->
     <script src="js/caltrans.js"></script>
     <!-- load graphic -->
