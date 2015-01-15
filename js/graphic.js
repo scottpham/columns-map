@@ -81,23 +81,19 @@ function render(width) {
 
         //initialize path data
         faultFeatures.attr("d", path)
-            .style("stroke", "red")
+            .style("stroke", "darkred")
             .style("fill", "none")
-            .style("opacity", 0)
             .style("stroke-width", 2);
 
         //check button
         if( $("#faults").is(":checked")){
-
             //make visible
-            faultFeatures.selectAll("path")
-                .style("opacity", 1);
+            faultFeatures.style("opacity", 1);
         }
         //if not
         else{
             //make invisible
-            faultFeatures.selectAll("path")
-                .style("opacity", 0);
+            faultFeatures.style("opacity", 0);
 
         }
 
@@ -144,7 +140,7 @@ function render(width) {
     var tipCaltrans = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return "CalTrans-owned Pier" + "</br>City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
+        .html(function(d) { return "BART-owned Pier" + "</br>City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
             (d.properties.line == "A" ? "Fremont Bound Trains" : (d.properties.line == "R" ? "Richmond Bound Trains" : (d.properties.line == "M" ? "Milbrae Bound Trains" : (d.properties.line == "C" ? "Pitsburg/Bay Point Bound Trains" : "")))) 
 
         });
