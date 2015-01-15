@@ -115,39 +115,36 @@ function render(width) {
         .attr("class", "tooltip")
         .style("opacity", 0); //hide till called
 
-    // //tip container for caltrans
-    var divCaltrans = d3.select("#map").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
 
     // //format for tooltip percentages
     var percentFormat = function(d){
-        if (d) { return (d3.format(".1%"))(d) }
+        if (d) { return (d3.format("%"))(d) }
         else { return "0%"}
         }
 
-    // //format for # of vaccines
-    var commaFormat = d3.format(",f")
+
+    // function showPercent(info){
+    //     return percentFormat()
+    // }
 
     // //define tip
-    var tip = d3.tip()
+    var localTip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return "Locally owned bridge</br>" + d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
-
+        .html(function(d) { return "Locally owned bridge</br>" + percentFormat(d.properties.current_construction_phase_complete) + " complete.</br>" + d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
     });
 
-    var tipCaltrans = d3.tip()
+    var bartTip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return "BART-owned Pier" + "</br>City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
+        .html(function(d) { return "BART owned Pier" + "</br>100% Complete</br>City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
             (d.properties.line == "A" ? "Fremont Bound Trains" : (d.properties.line == "R" ? "Richmond Bound Trains" : (d.properties.line == "M" ? "Milbrae Bound Trains" : (d.properties.line == "C" ? "Pitsburg/Bay Point Bound Trains" : "")))) 
 
         });
 
     // //call both tips
-    g.call(tip);
-    g.call(tipCaltrans);
+    g.call(localTip);
+    g.call(bartTip);
 
     //     //////////////end tooltip//////////////
 
@@ -157,8 +154,8 @@ function render(width) {
         d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
     });
 
-    //add latlng object to each item in caltrans dataset
-    caltrans.features.forEach(function(d){
+    //add latlng object to each item in bart dataset
+    bart.features.forEach(function(d){
         d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
     });
 
@@ -183,14 +180,14 @@ function render(width) {
             .style("stroke", "black")
             .style("stroke-width", 0.3)
             .on("mouseover", function(d,i){ 
-                tip.show(d);
+                localTip.show(d);
                 d3.select(this).each(highlight);})
             .on("mouseout", function(d,i){ 
-                tip.hide(d);
+                localTip.hide(d);
                 d3.select(this).each(unhighlight);})
             .on("click", clickForFeatures);
         };
-
+    //build local feature circles
     localFeature();
 
 
@@ -201,7 +198,7 @@ function render(width) {
         //generate an actual d3 selection and do stuff
         d3.select(this).attr("r", 15).style("opacity", 1).style("stroke-width", 1.5);
     };
-
+    //unhighlight
     var unhighlight = function(){
         var firstChild = this.parentNode.firstChild;
         if(firstChild) {
@@ -210,12 +207,12 @@ function render(width) {
         d3.select(this).attr("r", 8).style("opacity", 0.8).style("stroke-width", .5);
     }
 
-    //circles for caltrans.js
-    function caltransFeature(){
-        var caltransFeature = g.selectAll(".caltrans")
-            .data(caltrans.features)
+    //circles for bart.js
+    function bartFeature(){
+        var bartFeature = g.selectAll(".bart")
+            .data(bart.features)
             .enter().append("circle")
-            .attr("class", "caltrans")
+            .attr("class", "bart")
             .attr("r", 8)
             .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
             .style("opacity", "0.8")
@@ -224,23 +221,18 @@ function render(width) {
             .on("click", clickForFeatures)
             .on("mouseover", function(d,i){
                 d3.select(this).each(highlight);
-                tipCaltrans.show(d); 
+                bartTip.show(d); 
             })
             .on("mouseout", function(d,i){
                 d3.select(this).each(unhighlight);
-                tipCaltrans.hide(d);
+                bartTip.hide(d);
             });}
-
-    caltransFeature();
+    //build bart circles
+    bartFeature();
 
     //helper function sends properties to the console
     function clickForFeatures(d){ console.log(d.properties);}
    
-    //transform cirlces on update
-    // map.on("viewreset", update);
-
-    //call update manually
-    // update();
 
     //my helper function
     map.on("click", showLocation);
@@ -249,17 +241,16 @@ function render(width) {
         console.log(e.latlng);
     }
 
-    //define update:
+    //define update: (called on reset)
     function update() {
-
         //transform local points to go
         g.selectAll(".local").attr("transform",
             function(d){
                 return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
             }
         );
-        //transform caltrans points
-        g.selectAll(".caltrans")
+        //transform bart points
+        g.selectAll(".bart")
             .attr("transform", function(d) {
             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
         });
@@ -280,8 +271,8 @@ function render(width) {
                 return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
             }
         );
-        //transform caltrans points
-        g.selectAll(".caltrans")
+        //transform bart points
+        g.selectAll(".bart")
             .transition()
             .delay(myDelay)
             .duration(myDuration)
@@ -291,26 +282,19 @@ function render(width) {
     }
 
     //////////////////filters//////////////////
-    d3.select("#caltrans").on("click", function(){
-
-        console.log($("#caltrans").is(':checked'));
-
-        //check local
-        if($("#caltrans").is(':checked')) {
-            //add latlng object to each item in caltrans dataset
-            caltrans.features.forEach(function(d){
-                d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
-            });
-
+    d3.select("#bart").on("click", function(){
+        //log click valuye
+        console.log($("#bart").is(':checked'));
+        //check bart
+        if($("#bart").is(':checked')) {
             //data() enter() and append
-            caltransFeature();
-
+            bartFeature();
             //clone of update + fancy stuff
             transUpdate();
         }
         else{
-            //remove caltrans
-            d3.selectAll(".caltrans")
+            //remove bart
+            d3.selectAll(".bart")
                 .transition()
                 .delay(myDelay)
                 .duration(myDuration)
@@ -341,7 +325,7 @@ function render(width) {
         }
 
         else{
-            //remove caltrans
+            //remove local
             d3.selectAll(".local")
                 .transition()
                 .delay(myDelay)
@@ -366,16 +350,8 @@ function render(width) {
             //make invisible
             g.selectAll("path")
                 .style("opacity", 0);
-
         }
-
-
-
     });
-
-d3.select("#extra").on("click", function(){ console.log($("#caltrans").is(':checked'));})
-
-
 
 /////////////key//////////////
 
