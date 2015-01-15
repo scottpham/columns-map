@@ -83,7 +83,23 @@ function render(width) {
         faultFeatures.attr("d", path)
             .style("stroke", "red")
             .style("fill", "none")
+            .style("opacity", 0)
             .style("stroke-width", 2);
+
+        //check button
+        if( $("#faults").is(":checked")){
+
+            //make visible
+            faultFeatures.selectAll("path")
+                .style("opacity", 1);
+        }
+        //if not
+        else{
+            //make invisible
+            faultFeatures.selectAll("path")
+                .style("opacity", 0);
+
+        }
 
         update();
     }
@@ -336,6 +352,29 @@ function render(width) {
                 .duration(myDuration)
                 .remove(); 
         }
+    });
+
+    d3.select("#faults").on("click", function(){
+        //is the button on?
+        console.log($("#faults").is(":checked"));
+
+        //if so
+        if( $("#faults").is(":checked")){
+
+            //make visible
+            g.selectAll("path")
+                .style("opacity", 1);
+        }
+        //if not
+        else{
+            //make invisible
+            g.selectAll("path")
+                .style("opacity", 0);
+
+        }
+
+
+
     });
 
 d3.select("#extra").on("click", function(){ console.log($("#caltrans").is(':checked'));})
