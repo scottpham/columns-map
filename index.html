@@ -36,6 +36,9 @@
     <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 
+    <!-- topo -->
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+
     <style type="text/css">
         /* base NPR styles */
         html { -webkit-text-size-adjust: none; }
@@ -191,7 +194,7 @@
                 <input type="checkbox" id="local" autocomplete="off" checked> Locally Controlled Bridges
             </label>
             <label class="btn btn-primary">
-                <input type="checkbox" id="caltrans" autocomplete="off" checked> CalTrans Controlled Bridges
+                <input type="checkbox" id="caltrans" autocomplete="off" checked> BART Owned Piers
             </label>
         </div>
     </div>
@@ -213,8 +216,11 @@
     <script src="js/local.js"></script>
     <!-- scecond data set -->
     <script src="js/caltrans.js"></script>
+    <!-- load topo 
+    <script src="js/californiaFaults.json"></script> -->
     <!-- load graphic -->
     <script src="js/graphic.js" type="text/javascript"></script>
+
 
 </body>
 </html>

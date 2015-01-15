@@ -32,17 +32,70 @@ function render(width) {
         center: [37.74, -122.31], //lat, long, not long, lat
         zoom: 10,
         scrollWheelZoom: false}) 
-        //stamen tiles
         .addLayer(new L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
-}));
+    }));
 
     //initalize the svg layer
-    map._initPathRoot()
+    // map._initPathRoot();
 
     //grab the svg layer from the map object
-    var svg = d3.select("#map").select("svg"),
-        g = svg.append("g");
+
+    var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+
+    // var svg = d3.select("#map").select("svg"),
+        g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+    ////load up geojson/////
+    d3.json("js/californiaFaults.json", function(collection){
+        //faultShape = topojson.feature(faultShape, faultShape.objects.faults)
+        collection = topojson.feature(collection, collection.objects.faults);
+
+        console.log(collection);
+        //make a transform for a path
+        var transform = d3.geo.transform({point: projectPoint}),
+            path = d3.geo.path().projection(transform);
+
+        var faultFeatures = g.selectAll("path")
+            .data(collection.features)
+            .enter().append("path");
+
+    map.on("viewreset", reset);
+
+    reset();
+
+    function reset(){
+
+        ///path related stuff/////
+        bounds = path.bounds(collection);
+
+        var topLeft = bounds[0],
+            bottomRight = bounds[1];
+
+        svg.attr("width", bottomRight[0] - topLeft[0])
+            .attr("height", bottomRight[1] - topLeft[1])
+            .style("left", topLeft[0] + "px")
+            .style("top", topLeft[1] + "px");
+        
+        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+
+        //initialize path data
+        faultFeatures.attr("d", path)
+            .style("stroke", "red")
+            .style("fill", "none")
+            .style("stroke-width", 2);
+
+        update();
+    }
+
+    //leaflet implements a geometric transformation
+    function projectPoint(x, y){
+        var point = map.latLngToLayerPoint(new L.LatLng(y,x));
+        this.stream.point(point.x, point.y);
+    }
+
+});
+
 
     ////////////////tooltip stuff////////////////
     //create tip container in d3 for local
@@ -50,21 +103,21 @@ function render(width) {
         .attr("class", "tooltip")
         .style("opacity", 0); //hide till called
 
-    //tip container for caltrans
+    // //tip container for caltrans
     var divCaltrans = d3.select("#map").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-    //format for tooltip percentages
+    // //format for tooltip percentages
     var percentFormat = function(d){
         if (d) { return (d3.format(".1%"))(d) }
         else { return "0%"}
         }
 
-    //format for # of vaccines
+    // //format for # of vaccines
     var commaFormat = d3.format(",f")
 
-    //define tip
+    // //define tip
     var tip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
@@ -80,13 +133,13 @@ function render(width) {
 
         });
 
-    //call both tips
+    // //call both tips
     g.call(tip);
     g.call(tipCaltrans);
 
-        //////////////end tooltip//////////////
+    //     //////////////end tooltip//////////////
 
-    //add a latlng object to each item in the dataset
+    // //add a latlng object to each item in the dataset
     //var local is from local.js
     local.features.forEach(function(d) {
         d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
@@ -97,7 +150,7 @@ function render(width) {
         d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
     });
 
-    //color constants
+    // //color constants
     var colorCompleted = colors.blue1,
         colorNotCompleted = colors.orange2;
 
@@ -172,10 +225,10 @@ function render(width) {
     function clickForFeatures(d){ console.log(d.properties);}
    
     //transform cirlces on update
-    map.on("viewreset", update);
+    // map.on("viewreset", update);
 
     //call update manually
-    update();
+    // update();
 
     //my helper function
     map.on("click", showLocation);
@@ -184,9 +237,9 @@ function render(width) {
         console.log(e.latlng);
     }
 
-
     //define update:
     function update() {
+
         //transform local points to go
         g.selectAll(".local").attr("transform",
             function(d){
@@ -198,7 +251,6 @@ function render(width) {
             .attr("transform", function(d) {
             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
         });
-
     }
 
     ////delay constants
@@ -226,13 +278,13 @@ function render(width) {
         });
     }
 
-        //////////////////filters//////////////////
-    d3.select("#local").on("click", function(){
+    //////////////////filters//////////////////
+    d3.select("#caltrans").on("click", function(){
 
-        console.log($("#local").is(':checked'));
+        console.log($("#caltrans").is(':checked'));
 
         //check local
-        if($("#local").is(':checked')) {
+        if($("#caltrans").is(':checked')) {
             //add latlng object to each item in caltrans dataset
             caltrans.features.forEach(function(d){
                 d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
@@ -241,9 +293,8 @@ function render(width) {
             //data() enter() and append
             caltransFeature();
 
-            //clone of update + 
+            //clone of update + fancy stuff
             transUpdate();
-
         }
         else{
             //remove caltrans
@@ -255,11 +306,11 @@ function render(width) {
             }
         });
 
-    d3.select("#caltrans").on("click", function(){
+    d3.select("#local").on("click", function(){
 
-        console.log($("#caltrans").is(':checked'));
+        console.log($("#local").is(':checked'));
 
-        if( $("#caltrans").is(':checked')){
+        if( $("#local").is(':checked')){
             //add a latlng object to each item in the dataset
             local.features.forEach(function(d) {
                 d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
