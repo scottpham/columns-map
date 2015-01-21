@@ -25,8 +25,8 @@
 
     <!--d3 helpers-->
     <script src="//d3js.org/topojson.v1.min.js"></script>
-    <script src="//d3js.org/colorbrewer.v1.min.js"></script>
-    <script src="//d3js.org/queue.v1.min.js"></script>
+	<!--<script src="//d3js.org/colorbrewer.v1.min.js"></script>-->
+	<!--<script src="//d3js.org/queue.v1.min.js"></script>-->
     
     <!-- mapbox js cdn-->
     <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.2/mapbox.js'></script>
@@ -184,16 +184,16 @@
 </head>
 <body>
     <div class="col-xs-12">
-        <h1>Aerial Structurs in The Bay Area</h1>
+        <h1>Aerial Structures in The Bay Area</h1>
         <p>Many of the piers that hold up aerial structures (bridges, on-ramps, overpasses, etc.) have to be retrofitted for earthquake safety, especially along the BART lines. A lot of that work has been finished already, but much of it won't be done till 2019.</p>
     </div>
 
     <div class="col-lg-6">
-        <div data-toggle=""> 
+        <div class="btn-group" role="group" data-toggle="checkboxes"> 
             <label class="btn btn-primary">
-                <input type="checkbox" id="local" autocomplete="off" checked> Locally Controlled Bridges
+                <input type="checkbox" id="local" autocomplete="off"> Locally Controlled Bridges
             </label>
-            <label class="btn btn-primary">
+            <label class="btn btn-primary active">
                 <input type="checkbox" id="bart" autocomplete="off" checked> BART Owned Piers
             </label>
             <label class="btn btn-primary">

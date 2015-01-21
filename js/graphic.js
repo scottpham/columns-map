@@ -47,25 +47,25 @@ function render(width) {
         g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
     ////load up geojson/////
-    d3.json("js/californiaFaults.json", function(collection){
-        //faultShape = topojson.feature(faultShape, faultShape.objects.faults)
-        collection = topojson.feature(collection, collection.objects.faults);
+    function loadFaults(){
+        d3.json("js/californiaFaults.json", function(collection){
+            //faultShape = topojson.feature(faultShape, faultShape.objects.faults)
+            collection = topojson.feature(collection, collection.objects.faults);
 
-        console.log(collection);
-        //make a transform for a path
-        var transform = d3.geo.transform({point: projectPoint}),
-            path = d3.geo.path().projection(transform);
+            console.log(collection);
+            //make a transform for a path
+            var transform = d3.geo.transform({point: projectPoint}),
+                path = d3.geo.path().projection(transform);
 
-        var faultFeatures = g.selectAll("path")
-            .data(collection.features)
-            .enter().append("path");
+            var faultFeatures = g.selectAll("path")
+                .data(collection.features)
+                .enter().append("path").attr("class", "faults");
 
-    map.on("viewreset", reset);
+            map.on("viewreset", reset);
 
-    reset();
+            reset();
 
     function reset(){
-
         ///path related stuff/////
         bounds = path.bounds(collection);
 
@@ -103,11 +103,13 @@ function render(width) {
     //leaflet implements a geometric transformation
     function projectPoint(x, y){
         var point = map.latLngToLayerPoint(new L.LatLng(y,x));
-        this.stream.point(point.x, point.y);
+        this.stream.point(point.x, point.y);}
+    });
     }
 
-});
 
+    //load it
+    loadFaults();
 
     ////////////////tooltip stuff////////////////
     //create tip container in d3 for local
@@ -121,7 +123,6 @@ function render(width) {
         if (d) { return (d3.format("%"))(d) }
         else { return "0%"}
         }
-
 
     // function showPercent(info){
     //     return percentFormat()
@@ -137,17 +138,19 @@ function render(width) {
     var bartTip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return "BART owned Pier" + "</br>100% Complete</br>City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
+        .html(function(d) { return "BART owned Pier</br>" + (d.properties.completed == "yes" ? "Complete</br>" : "Incomplete</br>") + "City: " + d.properties.city + ".</br>" + (d.properties.name ? d.properties.name + "</br>" : "" ) + 
             (d.properties.line == "A" ? "Fremont Bound Trains" : (d.properties.line == "R" ? "Richmond Bound Trains" : (d.properties.line == "M" ? "Milbrae Bound Trains" : (d.properties.line == "C" ? "Pitsburg/Bay Point Bound Trains" : "")))) 
-
         });
 
     // //call both tips
     g.call(localTip);
     g.call(bartTip);
 
-    //     //////////////end tooltip//////////////
+         //////////////end tooltip//////////////
 
+
+
+    ////add colors to data////
     // //add a latlng object to each item in the dataset
     //var local is from local.js
     local.features.forEach(function(d) {
@@ -167,6 +170,14 @@ function render(width) {
     local.features.forEach(function(d){
         +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
     });
+
+
+    ////delay constants
+    var myDelay = function(d,i){return i * 0.8;};
+    var myDelaySlow = function (d,i){return i * 100;}
+    var myDuration = 5;
+
+    ///////////////joins////////////////
 
     //circles for local.js
     function localFeature(){
@@ -188,8 +199,7 @@ function render(width) {
             .on("click", clickForFeatures);
         };
     //build local feature circles
-    localFeature();
-
+    //localFeature();
 
     // highlight function for mouseover
     var highlight = function(){
@@ -198,6 +208,7 @@ function render(width) {
         //generate an actual d3 selection and do stuff
         d3.select(this).attr("r", 15).style("opacity", 1).style("stroke-width", 1.5);
     };
+
     //unhighlight
     var unhighlight = function(){
         var firstChild = this.parentNode.firstChild;
@@ -210,14 +221,11 @@ function render(width) {
     //circles for bart.js
     function bartFeature(){
         var bartFeature = g.selectAll(".bart")
-            .data(bart.features)
-            .enter().append("circle")
+            .data(bart.features);
+
+        bartFeature.enter()
+            .append("circle")
             .attr("class", "bart")
-            .attr("r", 8)
-            .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
-            .style("opacity", "0.8")
-            .style("stroke", "black")
-            .style("stroke-width", 0.3)
             .on("click", clickForFeatures)
             .on("mouseover", function(d,i){
                 d3.select(this).each(highlight);
@@ -226,7 +234,20 @@ function render(width) {
             .on("mouseout", function(d,i){
                 d3.select(this).each(unhighlight);
                 bartTip.hide(d);
-            });}
+            });
+
+        bartFeature
+            .transition()
+            .delay(myDelay)
+            .duration(myDuration)
+            .attr("r", 8)
+            .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
+            .style("opacity", 0.8)
+            .style("stroke", "black")
+            .style("stroke-width", 0.3);
+            
+        }
+
     //build bart circles
     bartFeature();
 
@@ -256,10 +277,6 @@ function render(width) {
         });
     }
 
-    ////delay constants
-    var myDelay = function(d,i){return i * 0.8;};
-    var myDuration = 5;
-
     function transUpdate() {
         //transform local points to go
         g.selectAll(".local")
@@ -274,30 +291,45 @@ function render(width) {
         //transform bart points
         g.selectAll(".bart")
             .transition()
-            .delay(myDelay)
             .duration(myDuration)
             .attr("transform", function(d) {
             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
         });
     }
 
+	//helper function for buttons
+	function mutuallyExclusive(id){
+		$('input[type=checkbox]').each(function(){
+			buttonID = $(this).attr("id");
+			if ($(this).is(":checked")){
+				//remove marks associated with that button
+				d3.selectAll("." + buttonID).remove();
+				//uncheck everything
+				$(this).prop("checked", false);
+			}	
+		});
+	$(id).prop("checked", true);
+	}
+
     //////////////////filters//////////////////
     d3.select("#bart").on("click", function(){
-        //log click valuye
+        //log click value
         console.log($("#bart").is(':checked'));
+
         //check bart
         if($("#bart").is(':checked')) {
+			//one at a time
+			mutuallyExclusive("#bart");
             //data() enter() and append
             bartFeature();
             //clone of update + fancy stuff
-            transUpdate();
+            //transUpdate();
+            update();
         }
         else{
             //remove bart
+			console.log("else fired");
             d3.selectAll(".bart")
-                .transition()
-                .delay(myDelay)
-                .duration(myDuration)
                 .remove(); 
             }
         });
@@ -307,29 +339,16 @@ function render(width) {
         console.log($("#local").is(':checked'));
 
         if( $("#local").is(':checked')){
-            //add a latlng object to each item in the dataset
-            local.features.forEach(function(d) {
-                d.LatLng = new L.LatLng(d.geometry.coordinates[1], d.geometry.coordinates[0]);
-            });
-
-            //get color sorted out for local.js
-            local.features.forEach(function(d){
-                +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
-            });
-
-            //data() enter() and append
+			mutuallyExclusive("#local");
+			//data() enter() and append
             localFeature();
-
             //call fancy update to correctly map geo points
-            transUpdate();
+            update();
         }
 
         else{
             //remove local
             d3.selectAll(".local")
-                .transition()
-                .delay(myDelay)
-                .duration(myDuration)
                 .remove(); 
         }
     });
@@ -340,21 +359,20 @@ function render(width) {
 
         //if so
         if( $("#faults").is(":checked")){
-
             //make visible
-            g.selectAll("path")
-                .style("opacity", 1);
+            mutuallyExclusive("#faults");
+
+            loadFaults();
         }
         //if not
         else{
             //make invisible
-            g.selectAll("path")
+            d3.selectAll("path")
                 .style("opacity", 0);
         }
     });
 
 /////////////key//////////////
-
     var legend = d3.select("#map").append("svg")
         .attr("width", 250)
         .attr("height", 115);
@@ -371,7 +389,7 @@ function render(width) {
     legend.append("g")
             .attr("class", "circleKey")
         .selectAll("g")
-            .data([{"color": colorNotCompleted, "text": "Incomplete (0-10%)"}, {"color": colorCompleted, "text":"Complete (80-100%)"}])
+            .data([{"color": colorNotCompleted, "text": "Incomplete"}, {"color": colorCompleted, "text":"Complete"}])
             .enter().append("g")
             .attr("class", "colorsGroup")
             .attr("transform", "translate(75, 30)");
