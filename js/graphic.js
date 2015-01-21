@@ -52,7 +52,7 @@ function render(width) {
             //faultShape = topojson.feature(faultShape, faultShape.objects.faults)
             collection = topojson.feature(collection, collection.objects.faults);
 
-            console.log(collection);
+            //console.log(collection);
             //make a transform for a path
             var transform = d3.geo.transform({point: projectPoint}),
                 path = d3.geo.path().projection(transform);
@@ -80,9 +80,11 @@ function render(width) {
         g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
         //initialize path data
-        faultFeatures.attr("d", path)
+        faultFeatures.attr("d", path).style("fill", "none")
+            .transition()
+            .delay(myDelay)
+            .duration(300)
             .style("stroke", "darkred")
-            .style("fill", "none")
             .style("stroke-width", 2);
 
         //check button
@@ -173,7 +175,7 @@ function render(width) {
 
 
     ////delay constants
-    var myDelay = function(d,i){return i * 0.8;};
+    var myDelay = function(d,i){return i * 0.5;};
     var myDelaySlow = function (d,i){return i * 100;}
     var myDuration = 5;
 
@@ -239,7 +241,7 @@ function render(width) {
         bartFeature
             .transition()
             .delay(myDelay)
-            .duration(myDuration)
+            .duration(0)
             .attr("r", 8)
             .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
             .style("opacity", 0.8)
@@ -277,25 +279,25 @@ function render(width) {
         });
     }
 
-    function transUpdate() {
-        //transform local points to go
-        g.selectAll(".local")
-            .transition()
-            .delay(myDelay)
-            .duration(myDuration)
-        .attr("transform",
-            function(d){
-                return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
-            }
-        );
-        //transform bart points
-        g.selectAll(".bart")
-            .transition()
-            .duration(myDuration)
-            .attr("transform", function(d) {
-            return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
-        });
-    }
+    // function transUpdate() {
+    //     //transform local points to go
+    //     g.selectAll(".local")
+    //         .transition()
+    //         .delay(myDelay)
+    //         .duration(myDuration)
+    //     .attr("transform",
+    //         function(d){
+    //             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
+    //         }
+    //     );
+    //     //transform bart points
+    //     g.selectAll(".bart")
+    //         .transition()
+    //         .duration(myDuration)
+    //         .attr("transform", function(d) {
+    //         return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
+    //     });
+    // }
 
 	//helper function for buttons
 	function mutuallyExclusive(id){
