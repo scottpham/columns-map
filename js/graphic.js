@@ -46,9 +46,9 @@ function render(width) {
     // var svg = d3.select("#map").select("svg"),
         g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-    ////load up geojson/////
+    ////loading geojson/////
     function loadFaults(){
-        d3.json("js/californiaFaults.json", function(collection){
+        d3.json("js/faults.json", function(collection){
             //faultShape = topojson.feature(faultShape, faultShape.objects.faults)
             collection = topojson.feature(collection, collection.objects.faults);
 
@@ -65,50 +65,67 @@ function render(width) {
 
             reset();
 
-    function reset(){
-        ///path related stuff/////
-        bounds = path.bounds(collection);
+            function reset(){
+                ///path related stuff/////
+                bounds = path.bounds(collection);
 
-        var topLeft = bounds[0],
-            bottomRight = bounds[1];
+                var topLeft = bounds[0],
+                    bottomRight = bounds[1];
 
-        svg.attr("width", bottomRight[0] - topLeft[0])
-            .attr("height", bottomRight[1] - topLeft[1])
-            .style("left", topLeft[0] + "px")
-            .style("top", topLeft[1] + "px");
-        
-        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+                svg.attr("width", bottomRight[0] - topLeft[0])
+                    .attr("height", bottomRight[1] - topLeft[1])
+                    .style("left", topLeft[0] + "px")
+                    .style("top", topLeft[1] + "px");
+                
+                g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
-        //initialize path data
-        faultFeatures.attr("d", path).style("fill", "none")
-            .transition()
-            .delay(myDelay)
-            .duration(300)
-            .style("stroke", "darkred")
-            .style("stroke-width", 2);
+                //initialize path data
+                faultFeatures.attr("d", path).style("fill", "none")
+                    .transition()
+                    .delay(myDelay)
+                    .duration(300)
+                    .style("stroke", "darkred")
+                    .style("stroke-width", 2);
 
-        //check button
-        if( $("#faults").is(":checked")){
-            //make visible
-            faultFeatures.style("opacity", 1);
-        }
-        //if not
-        else{
-            //make invisible
-            faultFeatures.style("opacity", 0);
+                faultFeatures
+                    .on("click", clickForFeatures)
+                    .on("mouseover", function(d,i){ 
+                        //highlight on mouseover
+                        d3.select(this)
+                            .style("stroke-width", 5)
+                            .style("stroke", colors.yellow3);
+                        faultTip.hide(d);
+                        faultTip.show(d);}
+                        )
+                    .on("mouseout", function(d,i){
+                        //reset color
+                        d3.select(this)
+                            .style("stroke-width", 2)
+                            .style("stroke", "darkred");
+                        //faultTip.hide(d);
+                        }
+                    );
 
-        }
+                //check button
+                if( $("#faults").is(":checked")){
+                    //make visible
+                    faultFeatures.style("opacity", 1);
+                }
+                //if not
+                else{
+                    //make invisible
+                    faultFeatures.style("opacity", 0);
+                }
+                //call update function for point data
+                update();
+            }
 
-        update();
-    }
-
-    //leaflet implements a geometric transformation
-    function projectPoint(x, y){
-        var point = map.latLngToLayerPoint(new L.LatLng(y,x));
-        this.stream.point(point.x, point.y);}
+            //leaflet implements a geometric transformation
+            function projectPoint(x, y){
+                var point = map.latLngToLayerPoint(new L.LatLng(y,x));
+                this.stream.point(point.x, point.y);}
     });
     }
-
 
     //load it
     loadFaults();
@@ -126,17 +143,19 @@ function render(width) {
         else { return "0%"}
         }
 
-    // function showPercent(info){
-    //     return percentFormat()
-    // }
+    //tip for faults
+    var faultTip = d3.tip()
+        .attr("class", 'd3-tip')
+        .direction('e')
+        .html(function(d) { return d.properties.name + "</br><a href='"+ d.properties.url + "'>Click for more info from the USGS</a>."})
 
     // //define tip
     var localTip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
-        .html(function(d) { return "Locally owned bridge</br>" + percentFormat(d.properties.current_construction_phase_complete) + " complete.</br>" + d.properties.description + "</br> Status: " + (d.properties.current_construction_phase_complete != "" ? "Under Construction" : "Under design phase") + "</br>Estimated Date of Completion: " + d.properties.end_construction
+        .html(function(d) { return "Locally owned bridge</br>" + percentFormat(d.properties.current_construction_phase_complete) + " complete.</br>" + d.properties.description + "</br>Completion Date: " + (d.properties.end_construction ? d.properties.end_construction : "Not Available.")
     });
-
+    //define tip for bart
     var bartTip = d3.tip()
         .attr("class", 'd3-tip')
         .offset([-10, 0])
@@ -147,6 +166,7 @@ function render(width) {
     // //call both tips
     g.call(localTip);
     g.call(bartTip);
+    g.call(faultTip);
 
          //////////////end tooltip//////////////
 
@@ -174,24 +194,21 @@ function render(width) {
     });
 
 
-    ////delay constants
-    var myDelay = function(d,i){return i * 0.5;};
-    var myDelaySlow = function (d,i){return i * 100;}
-    var myDuration = 5;
+    ////transition constants
+    var myDelay = function(d,i){return i * 0.4;};
+    var myDelaySlow = function (d,i){return i * 25;};
 
     ///////////////joins////////////////
 
-    //circles for local.js
+    //building circles from local.js
     function localFeature(){
+        //store selection
         var feature = g.selectAll(".local")
-            .data(local.features)
-            .enter().append("circle")
-            .attr("r", 8)
+            .data(local.features);
+
+        //perform enter
+        feature.enter().append("circle")
             .attr("class", "local")
-            .style("fill", function(d){return d.properties.color; })
-            .style("opacity", 0.8)
-            .style("stroke", "black")
-            .style("stroke-width", 0.3)
             .on("mouseover", function(d,i){ 
                 localTip.show(d);
                 d3.select(this).each(highlight);})
@@ -199,9 +216,19 @@ function render(width) {
                 localTip.hide(d);
                 d3.select(this).each(unhighlight);})
             .on("click", clickForFeatures);
-        };
-    //build local feature circles
-    //localFeature();
+
+        //transition entries
+        feature.transition()
+            .delay(myDelaySlow)
+            .duration(0)
+            .attr("r", 8)
+            .style("fill", function(d){return d.properties.color; })
+            .style("opacity", 0.8)
+            .style("stroke", "black")
+            .style("stroke-width", 0.3);
+    
+    };
+
 
     // highlight function for mouseover
     var highlight = function(){
@@ -222,9 +249,11 @@ function render(width) {
 
     //circles for bart.js
     function bartFeature(){
+        //store selection
         var bartFeature = g.selectAll(".bart")
             .data(bart.features);
 
+        //perform enter
         bartFeature.enter()
             .append("circle")
             .attr("class", "bart")
@@ -238,6 +267,7 @@ function render(width) {
                 bartTip.hide(d);
             });
 
+        //perform transition
         bartFeature
             .transition()
             .delay(myDelay)
@@ -376,7 +406,7 @@ function render(width) {
 
 /////////////key//////////////
     var legend = d3.select("#map").append("svg")
-        .attr("width", 250)
+        .attr("width", 200)
         .attr("height", 115);
 
     legend.append("rect")
