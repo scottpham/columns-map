@@ -90,14 +90,17 @@ function render(width) {
                 faultFeatures
                     .on("click", clickForFeatures)
                     .on("mouseover", function(d,i){ 
+
+                        $(".info").append("<div class='fault-info'><p>Fault Name: " + d.properties.name);
+
                         //highlight on mouseover
                         d3.select(this)
                             .style("stroke-width", 5)
                             .style("stroke", colors.yellow3);
-                        faultTip.hide(d);
-                        faultTip.show(d);}
+                        }
                         )
                     .on("mouseout", function(d,i){
+                        $(".fault-info").empty();
                         //reset color
                         d3.select(this)
                             .style("stroke-width", 2)
@@ -134,7 +137,7 @@ function render(width) {
     //create tip container in d3 for local
     var div = d3.select("#map").append("div")
         .attr("class", "tooltip")
-        .style("opacity", 0); //hide till called
+        .style("opacity", 1); //hide till called
 
 
     // //format for tooltip percentages
@@ -142,12 +145,6 @@ function render(width) {
         if (d) { return (d3.format("%"))(d) }
         else { return "0%"}
         }
-
-    //tip for faults
-    var faultTip = d3.tip()
-        .attr("class", 'd3-tip')
-        .direction('e')
-        .html(function(d) { return d.properties.name + "</br><a href='"+ d.properties.url + "'>Click for more info from the USGS</a>."})
 
     // //define tip
     var localTip = d3.tip()
@@ -166,11 +163,9 @@ function render(width) {
     // //call both tips
     g.call(localTip);
     g.call(bartTip);
-    g.call(faultTip);
+    //g.call(faultTip);
 
          //////////////end tooltip//////////////
-
-
 
     ////add colors to data////
     // //add a latlng object to each item in the dataset
@@ -226,7 +221,6 @@ function render(width) {
             .style("opacity", 0.8)
             .style("stroke", "black")
             .style("stroke-width", 0.3);
-    
     };
 
 
@@ -309,26 +303,6 @@ function render(width) {
         });
     }
 
-    // function transUpdate() {
-    //     //transform local points to go
-    //     g.selectAll(".local")
-    //         .transition()
-    //         .delay(myDelay)
-    //         .duration(myDuration)
-    //     .attr("transform",
-    //         function(d){
-    //             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
-    //         }
-    //     );
-    //     //transform bart points
-    //     g.selectAll(".bart")
-    //         .transition()
-    //         .duration(myDuration)
-    //         .attr("transform", function(d) {
-    //         return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
-    //     });
-    // }
-
 	//helper function for buttons
 	function mutuallyExclusive(id){
 		$('input[type=checkbox]').each(function(){
@@ -405,43 +379,58 @@ function render(width) {
     });
 
 /////////////key//////////////
-    var legend = d3.select("#map").append("svg")
-        .attr("width", 200)
-        .attr("height", 115);
 
-    legend.append("rect")
-        .style("fill", "white")
-        .attr("width", 190)
-        .attr("height", 100)
-        .attr("x", "50")
-        .attr("y", "2")
-        .style("opacity", 0.8)
-        ;
+// strategy:
+    // use L.control() to generate a div that is positioned right (.info)
+    // add an svg to that div (#legend)
+    // add a g to that svg and then more d3 stuff to those gs
+    // append dynamic info using jquery
+//defaults to position: topright
+var info = L.control({position: 'topright'});
 
-    legend.append("g")
-            .attr("class", "circleKey")
-        .selectAll("g")
-            .data([{"color": colorNotCompleted, "text": "Incomplete"}, {"color": colorCompleted, "text":"Complete"}])
-            .enter().append("g")
-            .attr("class", "colorsGroup")
-            .attr("transform", "translate(75, 30)");
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+};
 
-    //some key values that i'll repeat
-    var keyRadius = 15;
-    //make the circles
-    legend.selectAll(".colorsGroup").append("circle")
-        .style("stroke-width", 2.0)
-        .style("fill", function(d){ return d.color; })
-        .style("stroke", "black")
-        .attr("r", keyRadius)
-        .attr("cy", function(d,i){ return i * keyRadius*3;});
+// method that we will use to update the control based on feature properties passed
+info.update = function (props) {
+    this._div.innerHTML = '<h4>Status</h4>';
+};
 
-    //add annotations
-    legend.selectAll(".colorsGroup").append("text")
-        .style("font-size", 15)
-        .attr("x", keyRadius*1.5)
-        .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
-        .text(function(d){return d.text;});
+ info.addTo(map);
+
+var legend = d3.select(".info").append("svg")
+    .attr("id", "legend")
+    .attr("width", 150)
+    .attr("height", 115);
+
+legend.append("g")
+        .attr("class", "circleKey")
+    .selectAll("g")
+        .data([{"color": colorNotCompleted, "text": "Incomplete"}, {"color": colorCompleted, "text":"Complete"}])
+        .enter().append("g")
+        .attr("class", "colorsGroup")
+        .attr("transform", "translate(25, 30)");
+
+//some key values that i'll repeat
+var keyRadius = 15;
+//make the circles
+legend.selectAll(".colorsGroup").append("circle")
+    .style("stroke-width", 2.0)
+    .style("fill", function(d){ return d.color; })
+    .style("stroke", "black")
+    .attr("r", keyRadius)
+    .attr("cy", function(d,i){ return i * keyRadius*3;});
+
+// //add annotations
+legend.selectAll(".colorsGroup").append("text")
+    .style("font-size", 15)
+    .attr("x", keyRadius*1.5)
+    .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
+    .text(function(d){return d.text;});
+
 
 } //end render
 
