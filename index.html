@@ -166,18 +166,31 @@
       svg {
         position: relative;
       }
-/*
-        path {
-            fill: #000;
-            fill-opacity: .2;
-            stroke: #fff;
-            stroke-width: 1.5px;
-        }*/
 
         .key {
             position: absolute;
             top: 200;
             left: 150;
+        }
+        /*legend*/
+        .info {
+            padding: 6px 8px;
+            font: 16px Arial, Helvetica, sans-serif;
+            background: white;
+            /* a = opacity*/
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+            border-radius: 5px;
+            width: 150px;
+            min-height: 25px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+
+        .fault-info{
+
         }
 
         </style>
@@ -188,39 +201,40 @@
         <p>Many of the piers that hold up aerial structures (bridges, on-ramps, overpasses, etc.) have to be retrofitted for earthquake safety, especially along the BART lines. A lot of that work has been finished already, but much of it won't be done till 2019.</p>
     </div>
 
-    <div class="col-lg-6">
-        <div class="btn-group" role="group" data-toggle="checkboxes"> 
-            <label class="btn btn-primary">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-justified" id="btn-group" role="group" data-toggle="radio"> 
+            <label class="btn btn-sm btn-default">
                 <input type="checkbox" id="local" autocomplete="off"> Locally Controlled Bridges
             </label>
-            <label class="btn btn-primary active">
+            <label class="btn btn-sm btn-default active">
                 <input type="checkbox" id="bart" autocomplete="off" checked> BART Owned Columns
             </label>
-            <label class="btn btn-primary">
+            <label class="btn btn-sm btn-default">
                 <input type="checkbox" id="faults" autocomplete="off"> Fault Lines
             </label>
         </div>
     </div>
 
 
-
-    <div id="map"></div>
-
+    <div class="col-lg-12">
+        <div id="map"></div>
+    </div>
+    
     <div class="footnotes">
-        <h4>Notes: </h4>
+        <h4>Notes: There's a lot of local bridges that have been fixed, too.</h4>
     </div>
 
     <div class="footer">
-        <p>Source: <a href="http://www.dot.ca.gov/">CalTrans</a></p>
+        <p>Source: <a href="http://www.dot.ca.gov/">CalTrans</a>, BART, USGIS</p>
         <p>Credit: <a href="http://www.twitter.com/scottpham">Scott Pham</a>/NBC Bay Area</p>
     </div>
 
     <!-- load data before graphic-->
-    <script src="js/local2.js"></script>
+    <script src="js/local.js"></script>
     <!-- scecond data set -->
     <script src="js/bart.js"></script>
-    <!-- load topo 
-    <script src="js/californiaFaults.json"></script> -->
+    <!-- load topo  -->
+    <script src="js/faults.js"></script> 
     <!-- load graphic -->
     <script src="js/graphic.js" type="text/javascript"></script>
 

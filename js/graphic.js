@@ -36,104 +36,97 @@ function render(width) {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
     }));
 
-    //initalize the svg layer
-    // map._initPathRoot();
-
-    //grab the svg layer from the map object
-
+    //grab svg from map
     var svg = d3.select(map.getPanes().overlayPane).append("svg"),
-
-    // var svg = d3.select("#map").select("svg"),
+        //create an svg grouping that temporarily hides on zoom
         g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-    ////loading geojson/////
-    function loadFaults(){
-        d3.json("js/faults.json", function(collection){
-            //faultShape = topojson.feature(faultShape, faultShape.objects.faults)
-            collection = topojson.feature(collection, collection.objects.faults);
+    //convert topojson back to geojson    
+    var collection = topojson.feature(faults, faults.objects.faults);
 
-            //console.log(collection);
-            //make a transform for a path
-            var transform = d3.geo.transform({point: projectPoint}),
-                path = d3.geo.path().projection(transform);
+    //convert geojson to svg
+    var transform = d3.geo.transform({point: projectPoint}),
+        path = d3.geo.path().projection(transform);
 
-            var faultFeatures = g.selectAll("path")
-                .data(collection.features)
-                .enter().append("path").attr("class", "faults");
+    //reset paths on zoom
+    map.on("viewreset", reset);
 
-            map.on("viewreset", reset);
+   //leaflet implements a geometric transformation
+    function projectPoint(x, y){
+        var point = map.latLngToLayerPoint(new L.LatLng(y,x));
+        this.stream.point(point.x, point.y);}
 
-            reset();
+    function reset(){
+        console.log("reset fired")
+        //reset paths on zoom
+        bounds = path.bounds(collection);
 
-            function reset(){
-                ///path related stuff/////
-                bounds = path.bounds(collection);
+        var topLeft = bounds[0],
+            bottomRight = bounds[1];
 
-                var topLeft = bounds[0],
-                    bottomRight = bounds[1];
+        svg.attr("width", bottomRight[0] - topLeft[0])
+            .attr("height", bottomRight[1] - topLeft[1])
+            .style("left", topLeft[0] + "px")
+            .style("top", topLeft[1] + "px");
+        
+        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
-                svg.attr("width", bottomRight[0] - topLeft[0])
-                    .attr("height", bottomRight[1] - topLeft[1])
-                    .style("left", topLeft[0] + "px")
-                    .style("top", topLeft[1] + "px");
-                
-                g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+        //rebuild entirely on zoom
+        if ($("#faults").is(":checked")){
 
-                //initialize path data
-                faultFeatures.attr("d", path).style("fill", "none")
-                    .transition()
-                    .delay(myDelay)
-                    .duration(300)
-                    .style("stroke", "darkred")
-                    .style("stroke-width", 2);
+            d3.selectAll(".faults").remove();
 
-                faultFeatures
-                    .on("click", clickForFeatures)
-                    .on("mouseover", function(d,i){ 
+            buildFaults();}
 
-                        $(".info").append("<div class='fault-info'><p>Fault Name: " + d.properties.name);
+        update();
+        
+    };
 
-                        //highlight on mouseover
-                        d3.select(this)
-                            .style("stroke-width", 5)
-                            .style("stroke", colors.yellow3);
-                        }
-                        )
-                    .on("mouseout", function(d,i){
-                        $(".fault-info").empty();
-                        //reset color
-                        d3.select(this)
-                            .style("stroke-width", 2)
-                            .style("stroke", "darkred");
-                        //faultTip.hide(d);
-                        }
-                    );
+    //build out faultlines
+    function buildFaults(){
 
-                //check button
-                if( $("#faults").is(":checked")){
-                    //make visible
-                    faultFeatures.style("opacity", 1);
+        var faultFeatures = g.selectAll("path")
+            .data(collection.features)
+            .enter().append("path").attr("class", "faults");
+
+       //initialize path data
+        faultFeatures.attr("d", path).style("fill", "none")
+            .transition()
+            .delay(myDelay)
+            .duration(300)
+            .style("stroke", "darkred")
+            .style("stroke-width", 2);
+
+        //add mouseover effects
+        faultFeatures
+            .on("click", clickForFeatures)
+            .on("mouseover", function(d,i){ 
+                //empty text
+                $(".info").empty();
+                //write fault data
+                $(".info").append("<div class='fault-info'><h4><strong>Fault Name: </strong></h4><p>" + d.properties.name + "</p></div>");
+                //highlight on mouseover
+                d3.select(this)
+                    .style("stroke-width", 10)
+                    .style("stroke", colors.yellow3);
+                })
+            .on("mouseout", function(d,i){
+                //reset text in legend box
+                $(".info").empty()
+                    .append("<h4>Hover over a Fault Line</h4>");
+                //reset color
+                d3.select(this)
+                    .style("stroke-width", 2)
+                    .style("stroke", "darkred");
                 }
-                //if not
-                else{
-                    //make invisible
-                    faultFeatures.style("opacity", 0);
-                }
-                //call update function for point data
-                update();
-            }
+            );
 
-            //leaflet implements a geometric transformation
-            function projectPoint(x, y){
-                var point = map.latLngToLayerPoint(new L.LatLng(y,x));
-                this.stream.point(point.x, point.y);}
-    });
-    }
+    }//end buildFaults
 
-    //load it
-    loadFaults();
+    //call it for good measure
+    reset();
 
-    ////////////////tooltip stuff////////////////
+        ////////////////tooltip stuff////////////////
     //create tip container in d3 for local
     var div = d3.select("#map").append("div")
         .attr("class", "tooltip")
@@ -162,12 +155,16 @@ function render(width) {
 
     // //call both tips
     g.call(localTip);
-    g.call(bartTip);
-    //g.call(faultTip);
+    g.call(bartTip);    
 
          //////////////end tooltip//////////////
 
-    ////add colors to data////
+
+    ////transition constants
+    var myDelay = function(d,i){return i * 0.4;};
+    var myDelaySlow = function (d,i){return i * 25;};
+
+///////////////massaging data/////////////////
     // //add a latlng object to each item in the dataset
     //var local is from local.js
     local.features.forEach(function(d) {
@@ -183,17 +180,7 @@ function render(width) {
     var colorCompleted = colors.blue1,
         colorNotCompleted = colors.orange2;
 
-    //get color sorted out for local.js
-    local.features.forEach(function(d){
-        +d.properties.current_construction_phase_complete > 0.79 ? d.properties.color = colorCompleted : d.properties.color = colorNotCompleted;
-    });
-
-
-    ////transition constants
-    var myDelay = function(d,i){return i * 0.4;};
-    var myDelaySlow = function (d,i){return i * 25;};
-
-    ///////////////joins////////////////
+    ///////////////data joins////////////////
 
     //building circles from local.js
     function localFeature(){
@@ -217,7 +204,7 @@ function render(width) {
             .delay(myDelaySlow)
             .duration(0)
             .attr("r", 8)
-            .style("fill", function(d){return d.properties.color; })
+            .style("fill", colorNotCompleted)
             .style("opacity", 0.8)
             .style("stroke", "black")
             .style("stroke-width", 0.3);
@@ -232,7 +219,7 @@ function render(width) {
         d3.select(this).attr("r", 15).style("opacity", 1).style("stroke-width", 1.5);
     };
 
-    //unhighlight
+    //unhighlight and send to back
     var unhighlight = function(){
         var firstChild = this.parentNode.firstChild;
         if(firstChild) {
@@ -274,12 +261,12 @@ function render(width) {
             
         }
 
-    //build bart circles
+    // build bart circles
     bartFeature();
+    update();
 
     //helper function sends properties to the console
     function clickForFeatures(d){ console.log(d.properties);}
-   
 
     //my helper function
     map.on("click", showLocation);
@@ -301,26 +288,47 @@ function render(width) {
             .attr("transform", function(d) {
             return "translate(" + map.latLngToLayerPoint(d.LatLng).x + "," + map.latLngToLayerPoint(d.LatLng).y + ")";
         });
+
+    }//end update
+
+
+  //////////////////BUTTONS//////////////////
+
+    function checkWidth(width){
+        if (width<475){
+            $("#btn-group").attr("class", "btn-group-vertical");
+        }
     }
+    
+    checkWidth(width);
 
 	//helper function for buttons
 	function mutuallyExclusive(id){
 		$('input[type=checkbox]').each(function(){
+            //store all the button ids
 			buttonID = $(this).attr("id");
+
 			if ($(this).is(":checked")){
 				//remove marks associated with that button
 				d3.selectAll("." + buttonID).remove();
-				//uncheck everything
+				//uncheck everything but itself
 				$(this).prop("checked", false);
+                $(this).parent().removeClass("active");
 			}	
 		});
-	$(id).prop("checked", true);
+        //check itself
+	   $(id).prop("checked", true);
+        $(id).parent().addClass("active");
+
 	}
 
-    //////////////////filters//////////////////
+  
     d3.select("#bart").on("click", function(){
         //log click value
         console.log($("#bart").is(':checked'));
+
+        //change legend
+        buildBridgesLegend();
 
         //check bart
         if($("#bart").is(':checked')) {
@@ -344,6 +352,10 @@ function render(width) {
 
         console.log($("#local").is(':checked'));
 
+        //change legend
+        buildBridgesLegend();
+
+        //check checkbox status
         if( $("#local").is(':checked')){
 			mutuallyExclusive("#local");
 			//data() enter() and append
@@ -363,12 +375,12 @@ function render(width) {
         //is the button on?
         console.log($("#faults").is(":checked"));
 
+        buildFaultsLegend();
         //if so
         if( $("#faults").is(":checked")){
             //make visible
             mutuallyExclusive("#faults");
-
-            loadFaults();
+            reset();
         }
         //if not
         else{
@@ -390,47 +402,60 @@ var info = L.control({position: 'topright'});
 
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-    this.update();
+    // this.update();
     return this._div;
 };
 
-// method that we will use to update the control based on feature properties passed
-info.update = function (props) {
-    this._div.innerHTML = '<h4>Status</h4>';
-};
+info.addTo(map);
 
- info.addTo(map);
+function buildBridgesLegend(){
 
-var legend = d3.select(".info").append("svg")
-    .attr("id", "legend")
-    .attr("width", 150)
-    .attr("height", 115);
+    //empty out legend
+    $(".info").empty();
 
-legend.append("g")
-        .attr("class", "circleKey")
-    .selectAll("g")
-        .data([{"color": colorNotCompleted, "text": "Incomplete"}, {"color": colorCompleted, "text":"Complete"}])
-        .enter().append("g")
-        .attr("class", "colorsGroup")
-        .attr("transform", "translate(25, 30)");
+    //append an svg
+    var legend = d3.select(".info").append("svg")
+        .attr("id", "legend")
+        .attr("width", 150)
+        .attr("height", 85);
 
-//some key values that i'll repeat
-var keyRadius = 15;
-//make the circles
-legend.selectAll(".colorsGroup").append("circle")
-    .style("stroke-width", 2.0)
-    .style("fill", function(d){ return d.color; })
-    .style("stroke", "black")
-    .attr("r", keyRadius)
-    .attr("cy", function(d,i){ return i * keyRadius*3;});
+    //bind circle data to groups
+    legend.append("g")
+            .attr("class", "circleKey")
+        .selectAll("g")
+            .data([{"color": colorNotCompleted, "text": "Incomplete"}, {"color": colorCompleted, "text":"Complete"}])
+            .enter().append("g")
+            .attr("class", "colorsGroup")
+            .attr("transform", "translate(20, 20)");
+    //size of legend circles
+    var keyRadius = 15;
+    
+    //draw the circles
+    legend.selectAll(".colorsGroup").append("circle")
+        .style("stroke-width", 2.0)
+        .style("fill", function(d){ return d.color; })
+        .style("stroke", "black")
+        .attr("r", keyRadius)
+        .attr("cy", function(d,i){ return i * keyRadius*3;});
 
-// //add annotations
-legend.selectAll(".colorsGroup").append("text")
-    .style("font-size", 15)
-    .attr("x", keyRadius*1.5)
-    .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
-    .text(function(d){return d.text;});
+    //add the text
+    legend.selectAll(".colorsGroup").append("text")
+        .style("font-size", 15)
+        .attr("x", keyRadius*1.5)
+        .attr("y", function(d,i){ return keyRadius*3 * i + 5;})
+        .text(function(d){return d.text;});
+    }//end build Legend
 
+//build the legend
+buildBridgesLegend();
+
+//legend only for paths
+function buildFaultsLegend(){
+    $(".info").empty()
+        .append("<h4>Hover over a Fault Line</h4>")
+        //shrink the legend box a bit
+        .css("min-height", "50px");
+    }//end legend
 
 } //end render
 
