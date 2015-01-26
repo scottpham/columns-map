@@ -12,7 +12,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.366730556, 
-                    37.8883833333
+                    37.8088383333
                 ]
             }, 
             "type": "Feature", 
@@ -31,7 +31,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.363933611, 
-                    37.9235083333
+                    37.8123508333
                 ]
             }, 
             "type": "Feature", 
@@ -50,7 +50,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.371268056, 
-                    37.9006
+                    37.81006
                 ]
             }, 
             "type": "Feature", 
@@ -69,7 +69,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.370940278, 
-                    37.8970694444
+                    37.8097069444
                 ]
             }, 
             "type": "Feature", 
@@ -88,7 +88,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.370559444, 
-                    37.8950472222
+                    37.8095047222
                 ]
             }, 
             "type": "Feature", 
@@ -107,7 +107,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.370071111, 
-                    37.8934055556
+                    37.8093405556
                 ]
             }, 
             "type": "Feature", 
@@ -126,7 +126,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.369051944, 
-                    37.8920916667
+                    37.8092091667
                 ]
             }, 
             "type": "Feature", 
@@ -145,7 +145,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.369155278, 
-                    37.8915805556
+                    37.8091580556
                 ]
             }, 
             "type": "Feature", 
@@ -164,7 +164,7 @@ var local = {
                 "type": "Point", 
                 "coordinates": [
                     -122.368976944, 
-                    37.8898444444
+                    37.8089844444
                 ]
             }, 
             "type": "Feature", 
