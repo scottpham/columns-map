@@ -4,7 +4,7 @@ var local = {
         -122.866666667, 
         37.5666666667, 
         -121.916666667, 
-        38.6
+        38.5
     ], 
     "features": [
         {
@@ -258,25 +258,6 @@ var local = {
             "geometry": {
                 "type": "Point", 
                 "coordinates": [
-                    -122.85, 
-                    38.6
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "20C0065", 
-            "properties": {
-                "ADT_029": "7403", 
-                "description": "Healdsburg Ave.", 
-                "agency": "Healdsburg", 
-                "end_construction": "", 
-                "current_construction_phase_complete": "0.01", 
-                "YEAR_ADT_030": "2007"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
                     -122.25, 
                     37.7833333333
                 ]
@@ -334,8 +315,8 @@ var local = {
             "geometry": {
                 "type": "Point", 
                 "coordinates": [
-                    -122.183333333, 
-                    37.8833333333
+                    -122.19431, 
+                    37.889333
                 ]
             }, 
             "type": "Feature", 
