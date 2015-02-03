@@ -1,27 +1,293 @@
 var local = {
     "type": "FeatureCollection", 
     "bbox": [
-        -122.866666667, 
-        37.5666666667, 
+        -122.883295, 
+        37.582651, 
         -121.916666667, 
-        38.5
+        38.507401
     ], 
     "features": [
         {
             "geometry": {
                 "type": "Point", 
                 "coordinates": [
-                    -122.366730556, 
-                    37.8088383333
+                    -122.233333333, 
+                    37.7666666667
                 ]
             }, 
             "type": "Feature", 
-            "id": "01CA0001", 
+            "id": "33C0148", 
+            "properties": {
+                "ADT_029": "15025", 
+                "description": "23rd. Ave", 
+                "agency": "Oakland", 
+                "end_construction": "2016-12-31", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "1979"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.207255, 
+                    37.90121
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "28C0331", 
+            "properties": {
+                "ADT_029": "955", 
+                "description": "Bear Creek Rd.", 
+                "agency": "Orinda", 
+                "end_construction": "2016-09-30", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "2002"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.487113, 
+                    38.313608
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "20C0262", 
+            "properties": {
+                "ADT_029": "4600", 
+                "description": "Boyes Boulevard", 
+                "agency": "Sonoma County", 
+                "end_construction": "2016-10-03", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "2009"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.583333333, 
+                    37.9666666667
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "27C0144", 
+            "properties": {
+                "ADT_029": "255", 
+                "description": "Creek Rd. ", 
+                "agency": "Fairfax", 
+                "end_construction": "2018-01-01", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "1981"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.369155278, 
+                    37.8091580556
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "01CA0003", 
             "properties": {
                 "ADT_029": "", 
-                "description": "W. bound SFOBB pm Ramp W of Yerba Buena Island", 
+                "description": "E. Bound I-80 off ramp connecting to Treasure Island Rd.", 
                 "agency": "San Fran Cty. T.A.", 
                 "end_construction": "2017-12-30", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": ""
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.263903, 
+                    37.79095
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "33C0030", 
+            "properties": {
+                "ADT_029": "7342", 
+                "description": "Embarcadero St.", 
+                "agency": "Oakland", 
+                "end_construction": "2016-12-31", 
+                "current_construction_phase_complete": "0.01", 
+                "YEAR_ADT_030": "2007"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.477692, 
+                    37.813982
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "gg", 
+            "properties": {
+                "ADT_029": "", 
+                "description": "Golden Gate Bridge Span", 
+                "agency": "", 
+                "end_construction": "", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": ""
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.369051944, 
+                    37.8092091667
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "01CA0006", 
+            "properties": {
+                "ADT_029": "", 
+                "description": "Hillcrest Rd. W. of Yerba Buena Island", 
+                "agency": "San Fran Cty. T.A.", 
+                "end_construction": "2017-12-30", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": ""
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.21343, 
+                    37.812217
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "33C0215", 
+            "properties": {
+                "ADT_029": "7335", 
+                "description": "Leimert Blvd", 
+                "agency": "Oakland", 
+                "end_construction": "2018-04-15", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "2003"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.056349, 
+                    37.99905
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "28C0442", 
+            "properties": {
+                "ADT_029": "2000", 
+                "description": "Marsh Drive", 
+                "agency": "Concord", 
+                "end_construction": "2016-08-31", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "1984"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.19431, 
+                    37.889333
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "28C0330", 
+            "properties": {
+                "ADT_029": "6368", 
+                "description": "Miner Rd.", 
+                "agency": "Orinda", 
+                "end_construction": "2015-12-31", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "2006"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.006338, 
+                    37.582651
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "33C0128", 
+            "properties": {
+                "ADT_029": "15100", 
+                "description": "Niles blvd.", 
+                "agency": "Fremont", 
+                "end_construction": "2015-12-31", 
+                "current_construction_phase_complete": "0.01", 
+                "YEAR_ADT_030": "2010"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.479023, 
+                    37.825522
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "gg", 
+            "properties": {
+                "ADT_029": "", 
+                "description": "North Main Tower Base of Golden Gate Bridge", 
+                "agency": "", 
+                "end_construction": "", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": ""
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -121.916666667, 
+                    38.0166666667
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "28C0165", 
+            "properties": {
+                "ADT_029": "12000", 
+                "description": "North Parkside Dr.", 
+                "agency": "Pittsburg", 
+                "end_construction": "2015-08-28", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "1970"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.394619, 
+                    37.73926
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "34C0051", 
+            "properties": {
+                "ADT_029": "", 
+                "description": "Quint St.", 
+                "agency": "Peninsula Joint Powers Board", 
+                "end_construction": "2016-01-31", 
                 "current_construction_phase_complete": "", 
                 "YEAR_ADT_030": ""
             }
@@ -42,6 +308,44 @@ var local = {
                 "agency": "San Fran Cty. T.A.", 
                 "end_construction": "2016-06-30", 
                 "current_construction_phase_complete": "0.35", 
+                "YEAR_ADT_030": ""
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.258044, 
+                    38.11205
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "23C0152", 
+            "properties": {
+                "ADT_029": "8792", 
+                "description": "Sacramento St.", 
+                "agency": "Vallejo", 
+                "end_construction": "2017-10-01", 
+                "current_construction_phase_complete": "", 
+                "YEAR_ADT_030": "2008"
+            }
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -122.477692, 
+                    37.813982
+                ]
+            }, 
+            "type": "Feature", 
+            "id": "gg", 
+            "properties": {
+                "ADT_029": "", 
+                "description": "South Main Tower Base", 
+                "agency": "", 
+                "end_construction": "", 
+                "current_construction_phase_complete": "", 
                 "YEAR_ADT_030": ""
             }
         }, 
@@ -125,34 +429,15 @@ var local = {
             "geometry": {
                 "type": "Point", 
                 "coordinates": [
-                    -122.369051944, 
-                    37.8092091667
+                    -122.366730556, 
+                    37.8088383333
                 ]
             }, 
             "type": "Feature", 
-            "id": "01CA0006", 
+            "id": "01CA0001", 
             "properties": {
                 "ADT_029": "", 
-                "description": "Hillcrest Rd. W. of Yerba Buena Island", 
-                "agency": "San Fran Cty. T.A.", 
-                "end_construction": "2017-12-30", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": ""
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.369155278, 
-                    37.8091580556
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "01CA0003", 
-            "properties": {
-                "ADT_029": "", 
-                "description": "E. Bound I-80 off ramp connecting to Treasure Island Rd.", 
+                "description": "W. bound SFOBB pm Ramp W of Yerba Buena Island", 
                 "agency": "San Fran Cty. T.A.", 
                 "end_construction": "2017-12-30", 
                 "current_construction_phase_complete": "", 
@@ -182,217 +467,8 @@ var local = {
             "geometry": {
                 "type": "Point", 
                 "coordinates": [
-                    -122.233333333, 
-                    37.7666666667
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "33C0027", 
-            "properties": {
-                "ADT_029": "28660", 
-                "description": "Fruitvale Ave.", 
-                "agency": "Alameda County", 
-                "end_construction": "2015-01-31", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "1979"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.05, 
-                    37.9833333333
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "28C0442", 
-            "properties": {
-                "ADT_029": "2000", 
-                "description": "Marsh Drive", 
-                "agency": "Concord", 
-                "end_construction": "2016-08-31", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "1984"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.583333333, 
-                    37.9666666667
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "27C0144", 
-            "properties": {
-                "ADT_029": "255", 
-                "description": "Creek Rd. ", 
-                "agency": "Fairfax", 
-                "end_construction": "2018-01-01", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "1981"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.0, 
-                    37.5666666667
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "33C0128", 
-            "properties": {
-                "ADT_029": "15100", 
-                "description": "Niles blvd.", 
-                "agency": "Fremont", 
-                "end_construction": "2015-12-31", 
-                "current_construction_phase_complete": "0.01", 
-                "YEAR_ADT_030": "2010"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.25, 
-                    37.7833333333
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "33C0030", 
-            "properties": {
-                "ADT_029": "7342", 
-                "description": "Embarcadero St.", 
-                "agency": "Oakland", 
-                "end_construction": "2016-12-31", 
-                "current_construction_phase_complete": "0.01", 
-                "YEAR_ADT_030": "2007"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.233333333, 
-                    37.7666666667
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "33C0148", 
-            "properties": {
-                "ADT_029": "15025", 
-                "description": "23rd. Ave", 
-                "agency": "Oakland", 
-                "end_construction": "2016-12-31", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "1979"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.2, 
-                    37.8
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "33C0215", 
-            "properties": {
-                "ADT_029": "7335", 
-                "description": "Leimert Blvd", 
-                "agency": "Oakland", 
-                "end_construction": "2018-04-15", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "2003"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.19431, 
-                    37.889333
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "28C0330", 
-            "properties": {
-                "ADT_029": "6368", 
-                "description": "Miner Rd.", 
-                "agency": "Orinda", 
-                "end_construction": "2015-12-31", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "2006"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.2, 
-                    37.9
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "28C0331", 
-            "properties": {
-                "ADT_029": "955", 
-                "description": "Bear Creek Rd.", 
-                "agency": "Orinda", 
-                "end_construction": "2016-09-30", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "2002"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.394619, 
-                    37.73926
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "34C0051", 
-            "properties": {
-                "ADT_029": "", 
-                "description": "Quint St.", 
-                "agency": "Peninsula Joint Powers Board", 
-                "end_construction": "2016-01-31", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": ""
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -121.916666667, 
-                    38.0166666667
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "28C0165", 
-            "properties": {
-                "ADT_029": "12000", 
-                "description": "North Parkside Dr.", 
-                "agency": "Pittsburg", 
-                "end_construction": "2015-08-28", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "1970"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.466666667, 
-                    38.25
+                    -122.467376, 
+                    38.265764
                 ]
             }, 
             "type": "Feature", 
@@ -410,8 +486,8 @@ var local = {
             "geometry": {
                 "type": "Point", 
                 "coordinates": [
-                    -122.866666667, 
-                    38.5
+                    -122.883295, 
+                    38.507401
                 ]
             }, 
             "type": "Feature", 
@@ -423,120 +499,6 @@ var local = {
                 "end_construction": "2015-10-01", 
                 "current_construction_phase_complete": "", 
                 "YEAR_ADT_030": "2008"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.483333333, 
-                    38.3
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "20C0262", 
-            "properties": {
-                "ADT_029": "4600", 
-                "description": "Boyes Boulevard", 
-                "agency": "Sonoma County", 
-                "end_construction": "2016-10-03", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "2009"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.016666667, 
-                    37.5666666667
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "33C0111", 
-            "properties": {
-                "ADT_029": "35700", 
-                "description": "Decoto Rd.", 
-                "agency": "Union City", 
-                "end_construction": "2015-06-01", 
-                "current_construction_phase_complete": "0.8", 
-                "YEAR_ADT_030": "2009"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.25, 
-                    38.1
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "23C0152", 
-            "properties": {
-                "ADT_029": "8792", 
-                "description": "Sacramento St.", 
-                "agency": "Vallejo", 
-                "end_construction": "2017-10-01", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": "2008"
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.477692, 
-                    37.813982
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "gg", 
-            "properties": {
-                "ADT_029": "", 
-                "description": "Golden Gate Bridge Span", 
-                "agency": "", 
-                "end_construction": "", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": ""
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.479023, 
-                    37.825522
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "gg", 
-            "properties": {
-                "ADT_029": "", 
-                "description": "North Main Tower Base of Golden Gate Bridge", 
-                "agency": "", 
-                "end_construction": "", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": ""
-            }
-        }, 
-        {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": [
-                    -122.477692, 
-                    37.813982
-                ]
-            }, 
-            "type": "Feature", 
-            "id": "gg", 
-            "properties": {
-                "ADT_029": "", 
-                "description": "South Main Tower Base", 
-                "agency": "", 
-                "end_construction": "", 
-                "current_construction_phase_complete": "", 
-                "YEAR_ADT_030": ""
             }
         }
     ]

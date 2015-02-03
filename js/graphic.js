@@ -32,7 +32,7 @@ function render(width) {
         center: [37.74, -122.31], //lat, long, not long, lat
         zoom: 10,
         scrollWheelZoom: false}) 
-        .addLayer(new L.StamenTileLayer('toner-lite', {
+        .addLayer(new L.TileLayer('http://api.tiles.mapbox.com/v4/nbclocal.8621e715/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibmJjbG9jYWwiLCJhIjoiS3RIUzNQOCJ9.le_LAljPneLpb7tBcYbQXQ', {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
     }));
 
@@ -57,7 +57,6 @@ function render(width) {
         this.stream.point(point.x, point.y);}
 
     function reset(){
-        console.log("reset fired")
         //reset paths on zoom
         bounds = path.bounds(collection);
 
@@ -120,22 +119,21 @@ function render(width) {
                     .style("stroke", "darkred");
                 }
             );
-
     }//end buildFaults
 
     //call it for good measure
     reset();
 
-        ////////////////tooltip stuff////////////////
+    ////////////////tooltip stuff////////////////
     //create tip container in d3 for local
     var div = d3.select("#map").append("div")
         .attr("class", "tooltip")
-        .style("opacity", 1); //hide till called
+        .style("opacity", 0); //hide till called
 
 
     // //format for tooltip percentages
     var percentFormat = function(d){
-        if (d) { return (d3.format("%"))(d) }
+        if (d) { return (d3.format("%"))(d); }
         else { return "0%"}
         }
 
@@ -254,7 +252,7 @@ function render(width) {
             .delay(myDelay)
             .duration(0)
             .attr("r", 8)
-            .style("fill", function(d){return (d.properties.completed == "yes" ? colorCompleted : colorNotCompleted); })
+            .style("fill", function(d){return (d.properties.completed === "yes" ? colorCompleted : colorNotCompleted); })
             .style("opacity", 0.8)
             .style("stroke", "black")
             .style("stroke-width", 0.3);
@@ -267,13 +265,6 @@ function render(width) {
 
     //helper function sends properties to the console
     function clickForFeatures(d){ console.log(d.properties);}
-
-    //my helper function
-    map.on("click", showLocation);
-
-    function showLocation(e){
-        console.log(e.latlng);
-    }
 
     //define update: (called on reset)
     function update() {
@@ -306,7 +297,7 @@ function render(width) {
 	function mutuallyExclusive(id){
 		$('input[type=checkbox]').each(function(){
             //store all the button ids
-			buttonID = $(this).attr("id");
+			var buttonID = $(this).attr("id");
 
 			if ($(this).is(":checked")){
 				//remove marks associated with that button
